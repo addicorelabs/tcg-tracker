@@ -1,12 +1,15 @@
 {
     "name": "TCG Tracker",
     "short_name": "TCG Tracker",
+    "id": "tcg-tracker",
     "start_url": ".",
+    "scope": "./",
     "display": "standalone",
-    "background_color": "#1C1B1F",
-    "theme_color": "#5B4B8A",
+    "background_color": "#101017",
+    "theme_color": "#101017",
     "description": "Tournament tracker for Yu-Gi-Oh! and Magic: The Gathering",
     "orientation": "portrait-primary",
+    "lang": "it",
     "prefer_related_applications": false,
     "icons": [
         {

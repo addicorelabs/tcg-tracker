@@ -23,14 +23,22 @@
   <!-- No <meta name="viewport"> here on purpose: Flutter Web injects its own at
        startup and replaces any tag found in this file, so declaring one only
        produces a console warning. -->
-  <meta name="theme-color" content="#5B4B8A">
+  <!-- The app's own background, not an accent: this colour paints the browser
+       chrome and the splash screen, and anything else shows as a coloured band
+       above the first frame. One value rather than a light/dark pair because
+       the app opens dark whatever the system is set to. -->
+  <meta name="theme-color" content="#101017">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- "black", not "black-translucent": translucent puts the page under the
+       status bar, and Flutter Web does not inset its own app bar for it, so the
+       title would sit behind the clock. -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="TCG Tracker">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icons/Icon-512.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>

@@ -1,0 +1,97 @@
+name: Deploy PWA to GitHub Pages
+
+# Every push to main rebuilds and republishes. The manual trigger is there for
+# republishing without a code change, which is what a rotated Supabase key
+# needs.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Pages needs these to publish; nothing else in the workflow writes to the repo.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# A push landing mid-deploy waits for the current one instead of racing it. It
+# does not cancel it: half a deploy is a broken site.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          # Pinned, not "stable": the build that ships should be the one that
+          # was tested, and a Flutter release is free to change codegen.
+          flutter-version: 3.44.9
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - run: flutter analyze
+
+      - run: flutter test
+
+      - name: Build web
+        # The base href comes from the repository name, so renaming the repo
+        # cannot leave the app loading its assets from a path that is gone.
+        #
+        # The Supabase credentials are repository secrets. The anon key is
+        # public by design and ends up in the shipped bundle either way; they
+        # live in secrets to keep them out of the source, not because keeping
+        # them hidden would be possible. A build without them is still a valid
+        # build: the app runs local-only and the account screen says so.
+        run: |
+          flutter build web --release \
+            --base-href "/${{ github.event.repository.name }}/" \
+            --dart-define=SUPABASE_URL="${{ secrets.SUPABASE_URL }}" \
+            --dart-define=SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
+
+      - name: Stamp the offline cache with this commit
+        # The service worker keys its cache on this value, so a deploy lands in
+        # a fresh cache and the previous one is dropped. Without it every
+        # release would serve a mix of the new main.dart.js and the old assets.
+        run: |
+          sed -i "s/__BUILD_ID__/${{ github.sha }}/" build/web/service_worker.js
+          grep -q "tcg-tracker-${{ github.sha }}" build/web/service_worker.js
+
+      - name: Fail if the offline setup did not ship
+        # Every one of these is something that breaks the app only on the user's
+        # phone, hours later, with nothing in the build log to explain it.
+        #
+        # sqlite3.wasm and drift_worker.js are hand-downloaded binaries rather
+        # than build output, and an incremental build has already been seen to
+        # skip copying a file from web/. The bootstrap check guards the opposite
+        # mistake: Flutter regenerating its own, which would register the
+        # service worker that unregisters itself and take offline support with
+        # it.
+        run: |
+          test -f build/web/sqlite3.wasm
+          test -f build/web/drift_worker.js
+          test -f build/web/service_worker.js
+          grep -q "register('service_worker.js')" build/web/flutter_bootstrap.js
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
