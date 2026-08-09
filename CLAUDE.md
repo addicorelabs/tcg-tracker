@@ -63,6 +63,43 @@ committare le credenziali: passano solo da `--dart-define` o da
 - **`intl` è dichiarato come `any`** perché `flutter_localizations` lo pinna a una
   versione precisa fornita dall'SDK.
 
+### Deploy
+
+Ogni push su `main` fa girare `.github/workflows/deploy.yml`: analyze, test, build e
+pubblicazione su GitHub Pages. Il `--base-href` arriva da `github.event.repository.name`,
+così rinominare il repository non rompe i percorsi degli asset. Le credenziali Supabase
+sono due secret del repository; senza, la build riesce e l'app resta locale.
+
+Il workflow finisce con dei controlli che sembrano paranoia e non lo sono: ognuno copre
+un guasto che si manifesta solo sul telefono, ore dopo, senza traccia nel log di build.
+Uno di questi ha già colpito davvero — una build incrementale che non ricopiava un file
+da `web/`.
+
+### Service worker e offline
+
+`web/service_worker.js` e `web/flutter_bootstrap.js` sono **scritti a mano** e non vanno
+rigenerati.
+
+Dalla 3.44 Flutter non spedisce più un service worker che fa cache: quello che genera
+si disiscrive e ricarica la pagina. Continua però a registrarlo, e due service worker
+sullo stesso scope si sovrascrivono a vicenda — per questo il bootstrap è nostro, chiama
+`_flutter.loader.load()` senza `serviceWorkerSettings`, e registra il nostro.
+
+La strategia **non** è un manifest di precache generato alla build: i nomi dei file di
+Flutter non hanno hash di contenuto e l'insieme di file di CanvasKit cambia tra una
+versione e l'altra, quindi una lista scritta a mano marcirebbe in silenzio. Ogni GET
+same-origin riempie la cache mentre viene servita; dopo un caricamento completo online
+c'è tutto. Le navigazioni sono network-first, così un deploy nuovo si fa notare.
+
+La cache è intitolata al commit (`__BUILD_ID__`, sostituito dal workflow), quindi un
+deploy nuovo entra in una cache nuova e la vecchia viene buttata: senza, si servirebbe
+un `main.dart.js` nuovo con gli asset vecchi. **In locale il placeholder resta**, quindi
+durante lo sviluppo la cache non si invalida da sola: ricarica forzata.
+
+Le chiamate a Supabase non passano mai dalla cache — sono cross-origin e il fetch
+handler esce subito. Una risposta vecchia servita offline sembrerebbe il cloud che dà
+ragione a un dispositivo che invece è indietro.
+
 ### Asset web di Drift
 
 `web/sqlite3.wasm` e `web/drift_worker.js` sono file binari scaricati a mano, non

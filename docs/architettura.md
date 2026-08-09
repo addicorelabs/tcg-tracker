@@ -9,7 +9,7 @@ Da aggiornare a ogni decisione di design.
 |---|---|---|
 | Framework | Flutter (Dart) | Cross-platform, sviluppo da Windows |
 | Piattaforma target | **PWA installabile** (Flutter web), usata da iPhone | Evita del tutto Xcode e i 99 USD/anno di Apple |
-| Distribuzione | Hosting statico gratuito (Cloudflare Pages / Netlify / Vercel), installazione da Safari via "Aggiungi a Home" | Nessun App Store, nessun account sviluppatore |
+| Distribuzione | GitHub Pages via GitHub Actions, installazione da Safari via "Aggiungi a Home" | Nessun App Store, nessun account sviluppatore; aggiornare è un `git push` |
 | Build iOS nativa | Rimandata, opzionale | Il codice Flutter resta riutilizzabile se in futuro si vorrà pubblicare su App Store |
 | DB locale | Drift (SQLite via WASM su web) | Offline-first, query SQL per le analisi |
 | Backend | Supabase (Postgres + Auth) | Backup e sync tra dispositivi |
@@ -427,7 +427,7 @@ Android nativa.
 | F5 | Supabase: auth, sync, backup (anticipata per il rischio di eviction su iOS) | **fatto** |
 | F6 | Sezione analisi | **fatto** |
 | F7 | Impostazioni + formati personalizzati | **fatto** |
-| F8 | Deploy su hosting, icone, service worker, installazione su iPhone | da fare |
+| F8 | Deploy su hosting, icone, service worker, installazione su iPhone | **fatto** |
 
 Fase opzionale futura: build iOS nativa, se un giorno si vorrà l'App Store. Richiede
 un Mac o un servizio CI macOS più l'Apple Developer Program.
@@ -720,3 +720,41 @@ Le foto dei mazzi viaggiano in base64 dentro il documento, e il documento intero
 ricaricato a ogni push. Con molte foto il sync automatico resta utilizzabile, ma ogni
 modifica costa il caricamento di tutto l'archivio: è il conto da tenere presente se un
 giorno la libreria diventasse grande.
+
+## 12. Distribuzione
+
+### Hosting
+GitHub Pages, pubblicato da GitHub Actions a ogni push su `main`: analyze, test, build,
+deploy. Il `--base-href` viene dal nome del repository invece che scritto a mano, così
+rinominarlo non lascia l'app a cercare i propri asset in un percorso che non esiste più.
+
+Le credenziali Supabase sono due secret del repository. La anon key è pubblica per
+definizione — finisce nel bundle che il browser scarica — quindi i secret servono a
+tenerla fuori dal sorgente, non a nasconderla. Una build senza è valida: l'app resta
+locale e la schermata Account lo dice.
+
+### Service worker
+Scritto a mano, in `web/service_worker.js`. Dalla 3.44 Flutter non ne fornisce più uno
+che faccia cache: quello generato si disiscrive e ricarica. Continua però a registrarlo,
+e due service worker sullo stesso scope si sovrascrivono, quindi anche
+`web/flutter_bootstrap.js` è nostro e carica Flutter senza `serviceWorkerSettings`.
+
+Niente lista di precache generata alla build: i nomi dei file di Flutter non hanno hash
+di contenuto e l'insieme dei file di CanvasKit cambia tra versioni, quindi una lista
+scritta a mano marcirebbe senza dare segno. Ogni GET same-origin riempie la cache mentre
+viene servita, così dopo un caricamento completo online c'è tutto; le navigazioni sono
+network-first, così un deploy nuovo si fa notare. La cache è intitolata al commit, quindi
+un rilascio non può mai mescolare codice nuovo e asset vecchi.
+
+Le chiamate a Supabase non vengono mai messe in cache: una risposta vecchia servita
+offline sembrerebbe il cloud che conferma un dispositivo che invece è indietro.
+
+### Peso del primo caricamento
+Una decina di megabyte fra CanvasKit e codice compilato. È il pavimento di Flutter web
+dalla 3.44, che ha tolto il renderer HTML: non c'è una configurazione che lo riduca
+senza cambiare renderer. Si paga una volta, poi arriva tutto dalla cache.
+
+### Installazione su iPhone
+Safari, Condividi, "Aggiungi a Home". Da lì parte a schermo intero. La barra di stato è
+`black` e non `black-translucent`: con la seconda la pagina passa sotto l'orologio e
+Flutter Web non insetta la propria app bar, quindi il titolo ci finisce dietro.
