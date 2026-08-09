@@ -1,0 +1,14 @@
+# Normalizza i fine riga: LF nel repository, conversione automatica nel working copy.
+# Evita diff spuri quando lo stesso repo viene usato da Windows e da macOS.
+* text=auto eol=lf
+
+# File binari: nessuna conversione.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
