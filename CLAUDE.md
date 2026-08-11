@@ -167,28 +167,6 @@ curl -L -o web/sqlite3.wasm    https://github.com/simolus3/sqlite3.dart/releases
   l'ultima riga della lista
 - La barra del titolo **sfoca ciò che le passa sotto**. Non è decorazione: un
   titolo steso su carte e numeri in movimento diventa illeggibile
-- **L'app arriva sotto la status bar**, e ci vogliono tre cose insieme —
-  toglierne una lascia la banda nera in cima:
-  1. `apple-mobile-web-app-status-bar-style: black-translucent` in
-     `web/index.html`. iOS lo legge **all'installazione** e lo congela, come
-     l'icona: cambiarlo non tocca un'app già sulla home, va rimossa e riaggiunta
-  2. `viewport-fit=cover` sul meta viewport. Flutter Web scrive il proprio meta
-     (`width=device-width, initial-scale=1.0, maximum-scale=1.0,
-     user-scalable=no`) e **non** include `viewport-fit`; senza, iOS impagina
-     dentro la safe area e `env(safe-area-*)` vale zero. Dichiararlo nel file non
-     serve, il motore rimuove quello che trova e mette il suo, quindi un
-     `MutationObserver` lo aspetta e gli aggiunge il pezzo
-  3. La misura vera e propria, che Flutter Web non riporta mai per una PWA
-     installata: un elemento sonda con `padding-top: env(safe-area-inset-top)`,
-     letto da `shared/layout/status_bar_inset.dart`. Mai messo in cache — vale
-     zero finché Safari non ha applicato il punto 2, e cambia girando il
-     telefono. `StatusBarScope` (`app/app.dart`, nel `builder` di `MaterialApp`)
-     lo rimisura dopo il primo frame e a ogni `didChangeMetrics`
-
-  Da lì in giù è un normale `MediaQuery.padding.top` e ci pensano `Scaffold`,
-  `AppBar` e `SafeArea`. `TopBar.inset` lo somma a `kToolbarHeight`, ed è per
-  questo che non è più `const`. I bottom sheet usano `SafeArea(top: false)`:
-  salgono dal basso e la status bar non la vedono mai
 - Dove l'intestazione è fissa e non scorre (Tornei, Mazzi, Archetipi) i filtri
   vengono spinti sotto la barra con uno spazio alto `TopBar.inset`, e scorre
   solo la lista sotto di loro

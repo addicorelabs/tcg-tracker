@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/sync/sync_controller.dart';
 import '../features/settings/providers/app_settings_provider.dart';
 import '../l10n/app_localizations.dart';
-import '../shared/layout/status_bar_scope.dart';
 import 'router.dart';
 import 'theme.dart';
 
@@ -24,9 +23,6 @@ class TcgTrackerApp extends ConsumerWidget {
     return MaterialApp.router(
       routerConfig: router,
       debugShowCheckedModeBanner: false,
-
-      // The one place the status bar inset is handed to the framework.
-      builder: (context, child) => StatusBarScope(child: child!),
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),

@@ -22,7 +22,7 @@
 
   <!-- No <meta name="viewport"> here on purpose: Flutter Web injects its own at
        startup and replaces any tag found in this file, so declaring one only
-       produces a console warning. It is patched instead, further down. -->
+       produces a console warning. -->
   <!-- The app's own background, not an accent: this colour paints the browser
        chrome and the splash screen, and anything else shows as a coloured band
        above the first frame. One value rather than a light/dark pair because
@@ -32,12 +32,10 @@
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <!-- "black-translucent" puts the page itself under the status bar, so the app
-       reaches the top of the screen instead of stopping below a solid band. The
-       clock and the battery are then drawn over the app, and Flutter Web reports
-       no inset to keep clear of them — see the probe at the end of <body>, which
-       measures it for the app to use. -->
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- "black", not "black-translucent": translucent puts the page under the
+       status bar, and Flutter Web does not inset its own app bar for it, so the
+       title would sit behind the clock. -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="TCG Tracker">
   <!-- The maskable icons, which are the full-bleed ones: iOS applies its own
        rounded mask to a home screen icon, and the corners the shaped icon
@@ -51,79 +49,18 @@
   <title>TCG Tracker</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- Installed on iOS, anywhere the app does not reach is painted with the
-       background of <body>, not with theme-color and not with the meta tags
-       above: an unstyled body leaves a white band there. With the status bar
-       translucent the app does reach the top, so what is left is the home
-       indicator and the overscroll rubber band. -->
+  <!-- Installed on iOS, the status bar area is painted with the background of
+       <body>, not with theme-color and not with the meta tag above: an unstyled
+       body leaves a white band above the app. Flutter paints its own canvas over
+       this, so the colour only ever shows where the app itself does not reach —
+       the status bar, the home indicator, and the overscroll rubber band. -->
   <style>
     html, body {
       margin: 0;
       padding: 0;
       background-color: #101017;
     }
-
-    /* Nothing to see: an empty box whose top padding is the status bar inset,
-       so the app can read a number CSS knows and Flutter Web does not. */
-    #safe-area-probe {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 0;
-      padding-top: env(safe-area-inset-top);
-      pointer-events: none;
-      visibility: hidden;
-    }
   </style>
-
-  <!-- The viewport Flutter Web writes for itself is
-       "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-       and nothing more. Without viewport-fit=cover iOS lays the page out inside
-       the safe area, so the app stops below the status bar and env(safe-area-*)
-       is zero — which is the black band this exists to remove.
-
-       Declaring the tag in this file does not work: the engine removes whatever
-       it finds and appends its own. So the tag is waited for and then extended,
-       which is a change Safari does apply.
-
-       The nudge afterwards is what keeps taps landing where they are drawn. The
-       viewport grows by the height of the status bar, but Safari applies that a
-       layout pass later and reports no resize event for it, so Flutter keeps the
-       size it measured while booting: it then paints a frame the wrong height
-       into a view of the right one, and everything is drawn a status bar higher
-       than the framework believes it to be. A resize event makes it measure the
-       page again, which is all it needed. -->
-  <script>
-    (function () {
-      function remeasure() {
-        window.dispatchEvent(new Event('resize'));
-        if (window.visualViewport) {
-          window.visualViewport.dispatchEvent(new Event('resize'));
-        }
-      }
-
-      function cover() {
-        var meta = document.querySelector('meta[name=viewport]');
-        if (!meta) return false;
-        if (meta.content.indexOf('viewport-fit') !== -1) return true;
-        meta.content += ', viewport-fit=cover';
-        // Once when the next frame is due, once well after it: the first covers
-        // a viewport that settles immediately, the second one that takes its
-        // time. Measuring twice costs a DOM read; measuring too early costs the
-        // offset this exists to avoid.
-        requestAnimationFrame(remeasure);
-        setTimeout(remeasure, 400);
-        return true;
-      }
-
-      if (!cover()) {
-        var observer = new MutationObserver(function () {
-          if (cover()) observer.disconnect();
-        });
-        observer.observe(document.head, { childList: true });
-      }
-    })();
-  </script>
 </head>
 <body>
   <!--
@@ -135,18 +72,5 @@
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
   <script src="flutter_bootstrap.js" async></script>
-
-  <!-- Read live on every call rather than computed here and stored:
-       env(safe-area-inset-top) resolves to zero until Safari has applied the
-       viewport-fit patched in above, which can be a frame later than the app's
-       first build. The app measures again once the frame is on screen. -->
-  <div id="safe-area-probe"></div>
-  <script>
-    window.statusBarInset = function () {
-      var probe = document.getElementById('safe-area-probe');
-      if (!probe) return 0;
-      return parseFloat(getComputedStyle(probe).paddingTop) || 0;
-    };
-  </script>
 </body>
 </html>

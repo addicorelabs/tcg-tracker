@@ -67,7 +67,7 @@ class DecksScreen extends ConsumerWidget {
         children: [
           // The selectors are fixed rather than scrolling, so they are pushed
           // clear of the bar instead of passing under it; only the list moves.
-          SizedBox(height: TopBar.inset),
+          const SizedBox(height: TopBar.inset),
           const _GameSelector(),
           const _FormatFilter(),
           const Divider(height: 1),

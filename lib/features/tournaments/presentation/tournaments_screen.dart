@@ -38,7 +38,7 @@ class TournamentsScreen extends ConsumerWidget {
       // The filters are fixed rather than scrolling, so they are pushed clear
       // of the bar instead of passing under it; only the list below them moves.
       body: Padding(
-        padding: EdgeInsets.only(top: TopBar.inset),
+        padding: const EdgeInsets.only(top: TopBar.inset),
         child: Column(
           children: [
             const _Filters(),
