@@ -206,7 +206,9 @@ abstract final class AppTheme {
             : colorScheme.surface,
         indicatorColor: colorScheme.primary.withValues(alpha: 0.20),
         elevation: 0,
-        height: 68,
+        // Material's own default. A shorter bar does not shrink its contents,
+        // it crops them: at 68 the labels lost their bottom few pixels.
+        height: 80,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(
