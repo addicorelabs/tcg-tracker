@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../shared/layout/floating_bar_inset.dart';
+
 /// Colours that carry meaning in this app and therefore cannot live in the
 /// generated [ColorScheme]: the identity of each game and the outcome of a
 /// match. Reached from a widget with `Theme.of(context).appColors`.
@@ -211,7 +213,7 @@ abstract final class AppTheme {
         elevation: 0,
         // A shorter bar does not shrink its contents, it crops them: at 68 the
         // labels lost their bottom few pixels.
-        height: 72,
+        height: FloatingBar.height,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(

@@ -131,6 +131,14 @@ curl -L -o web/sqlite3.wasm    https://github.com/simolus3/sqlite3.dart/releases
 - Le regole di calcolo delle statistiche vivono solo in `lib/core/stats/` e non vengono
   riscritte nelle singole schermate
 - Ogni schermata deve funzionare senza rete
+- La barra di navigazione è una pillola che **galleggia sopra** il corpo
+  (`extendBody: true`), così l'app si vede tutt'intorno. Ogni schermata che
+  scorre deve quindi lasciarle posto da sola: `.clearingFloatingBar` sul padding
+  di ciò che scorre, e `LiftedFab` intorno a un FAB. Le misure stanno solo in
+  `shared/layout/floating_bar_inset.dart`, costanti e non lette da `MediaQuery`,
+  perché lo `Scaffold` azzera il padding inferiore nello slot del FAB — cioè
+  proprio dove serve. Dimenticarsene su una schermata rende irraggiungibile
+  l'ultima riga della sua lista
 - Un mazzo, un formato o un archetipo con dati storici collegati si archivia, non si
   cancella: lo storico dei tornei deve restare leggibile
 - Il **contatore punti vita** (`features/life/`) non scrive niente nel database: è uno

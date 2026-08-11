@@ -8,6 +8,7 @@ import '../../../data/models/enums.dart';
 import '../../../data/repositories/archetype_repository.dart';
 import '../../../data/repositories/match_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/floating_bar_inset.dart';
 import '../../../shared/widgets/archetype_picker.dart';
 import '../../../shared/widgets/game_counters.dart';
 import '../../../shared/widgets/number_stepper.dart';
@@ -235,7 +236,7 @@ class _RoundFormState extends ConsumerState<_RoundForm> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32).clearingFloatingBar,
         children: [
           Row(
             children: [

@@ -9,6 +9,7 @@ import '../../../data/db/app_database.dart';
 
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/floating_bar_inset.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../providers/deck_filter_provider.dart';
 
@@ -53,10 +54,12 @@ class DecksScreen extends ConsumerWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRoute.newDeck.path),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.deckNew),
+      floatingActionButton: LiftedFab(
+        child: FloatingActionButton.extended(
+          onPressed: () => context.push(AppRoute.newDeck.path),
+          icon: const Icon(Icons.add),
+          label: Text(l10n.deckNew),
+        ),
       ),
       body: Column(
         children: [
@@ -107,7 +110,7 @@ class _ArchetypeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96).clearingFloatingBar,
       itemCount: groups.length,
       separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (context, index) => _ArchetypeCard(group: groups[index]),

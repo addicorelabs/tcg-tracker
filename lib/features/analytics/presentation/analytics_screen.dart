@@ -7,6 +7,7 @@ import '../../../core/utils/formatting.dart';
 import '../../../data/db/app_database.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/floating_bar_inset.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/section_label.dart';
 import '../../../shared/widgets/stat_tile.dart';
@@ -30,7 +31,7 @@ class AnalyticsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navAnalytics)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32).clearingFloatingBar,
         children: [
           const _Filters(),
           const SizedBox(height: 24),

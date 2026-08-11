@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
+import '../shared/layout/floating_bar_inset.dart';
 
 /// Navigation frame shared by the five top-level sections.
 ///
@@ -45,6 +46,10 @@ class ShellScaffold extends StatelessWidget {
     }
 
     return Scaffold(
+      // The bar floats over the body instead of sitting beside it, so the app
+      // carries on behind and around the pill. The price is that no screen gets
+      // its bottom clearance for free: see [FloatingBar].
+      extendBody: true,
       body: navigationShell,
       bottomNavigationBar: _FloatingNavigationBar(
         selectedIndex: navigationShell.currentIndex,
@@ -78,11 +83,9 @@ class ShellScaffold extends StatelessWidget {
 
 /// The bottom bar as a rounded pill inset from the edges of the screen.
 ///
-/// It sits in the scaffold's bottom slot rather than over the body, so it takes
-/// its own room and nothing scrolls underneath it. That costs the effect of
-/// content sliding behind the bar, and buys not having to keep a bottom padding
-/// in step across every scrolling screen in the app — get that wrong on one of
-/// them and the last row of the list is unreachable.
+/// Its size and margins come from [FloatingBar], which is also where every
+/// screen reads the room it has to leave at the bottom: the two numbers are the
+/// same number, and they stop agreeing the moment they are written twice.
 class _FloatingNavigationBar extends StatelessWidget {
   const _FloatingNavigationBar({
     required this.selectedIndex,
@@ -99,16 +102,19 @@ class _FloatingNavigationBar extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     const radius = BorderRadius.all(Radius.circular(26));
 
-    // `minimum` rather than plain padding: installed to the home screen, Flutter
-    // Web reports no safe area at all, so relying on the inset alone would sit
-    // the pill on top of the home indicator. Where the inset does arrive, it
-    // wins.
-    return SafeArea(
-      top: false,
-      // The side margins are as wide as the labels allow: every pixel taken off
-      // here comes off a fifth of the pill, and "Impostazioni" has to fit in one
-      // of those fifths.
-      minimum: const EdgeInsets.fromLTRB(24, 0, 24, 28),
+    // Fixed margins rather than a SafeArea: installed to the home screen,
+    // Flutter Web reports no safe area at all, and every screen has to leave
+    // room for this bar from a constant anyway — see `FloatingBar`. The side
+    // margins are as wide as the labels allow, since every pixel taken off
+    // here comes off a fifth of the pill and "Impostazioni" has to fit in one
+    // of those fifths.
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        FloatingBar.sideMargin,
+        0,
+        FloatingBar.sideMargin,
+        FloatingBar.bottomMargin,
+      ),
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: radius,

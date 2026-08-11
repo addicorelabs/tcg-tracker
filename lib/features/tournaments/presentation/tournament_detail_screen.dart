@@ -11,6 +11,7 @@ import '../../../data/repositories/archetype_repository.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../data/repositories/tournament_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/floating_bar_inset.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/result_chip.dart';
 import '../../../shared/widgets/section_label.dart';
@@ -80,16 +81,18 @@ class _Detail extends ConsumerWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.pushNamed(
-          AppRoute.newRound.routeName,
-          pathParameters: {'id': tournament.id},
+      floatingActionButton: LiftedFab(
+        child: FloatingActionButton.extended(
+          onPressed: () => context.pushNamed(
+            AppRoute.newRound.routeName,
+            pathParameters: {'id': tournament.id},
+          ),
+          icon: const Icon(Icons.add),
+          label: Text(l10n.roundNew),
         ),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.roundNew),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96).clearingFloatingBar,
         children: [
           _Header(tournament: tournament),
           const SizedBox(height: 24),

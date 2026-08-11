@@ -12,6 +12,7 @@ import '../../../data/models/enums.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../data/repositories/deck_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/floating_bar_inset.dart';
 import '../../../shared/widgets/archetype_picker.dart';
 import '../../../shared/widgets/mana_pips.dart';
 import '../../../shared/widgets/section_label.dart';
@@ -285,7 +286,12 @@ class _DeckFormState extends ConsumerState<_DeckForm> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+          padding: const EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            32,
+          ).clearingFloatingBar,
           children: [
             // The game list arrives from the database a frame later, and a
             // SegmentedButton with no segments asserts.

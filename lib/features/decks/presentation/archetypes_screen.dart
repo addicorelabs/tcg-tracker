@@ -6,6 +6,7 @@ import '../../../data/db/app_database.dart';
 import '../../../data/repositories/archetype_repository.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/floating_bar_inset.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../providers/deck_filter_provider.dart';
 
@@ -35,10 +36,12 @@ class _ArchetypesScreenState extends ConsumerState<ArchetypesScreen> {
       appBar: AppBar(title: Text(l10n.archetypesTitle)),
       floatingActionButton: formatId == null
           ? null
-          : FloatingActionButton.extended(
-              onPressed: () => _addArchetype(gameId, formatId),
-              icon: const Icon(Icons.add),
-              label: Text(l10n.actionAdd),
+          : LiftedFab(
+              child: FloatingActionButton.extended(
+                onPressed: () => _addArchetype(gameId, formatId),
+                icon: const Icon(Icons.add),
+                label: Text(l10n.actionAdd),
+              ),
             ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +117,7 @@ class _ArchetypeList extends ConsumerWidget {
         title: l10n.archetypesEmpty,
       ),
       AsyncData(:final value) => ListView.separated(
-        padding: const EdgeInsets.only(bottom: 96),
+        padding: const EdgeInsets.only(bottom: 96).clearingFloatingBar,
         itemCount: value.length,
         separatorBuilder: (_, _) => const Divider(height: 1),
         itemBuilder: (context, index) {

@@ -9,6 +9,7 @@ import '../../../core/utils/catalog_names.dart';
 import '../../../data/db/app_database.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/floating_bar_inset.dart';
 import '../../../shared/widgets/section_label.dart';
 import '../../../shared/widgets/stat_tile.dart';
 import '../../tournaments/providers/tournament_providers.dart';
@@ -30,7 +31,12 @@ class DashboardScreen extends StatelessWidget {
         slivers: [
           const SliverToBoxAdapter(child: _Hero()),
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+            padding: const EdgeInsets.fromLTRB(
+              16,
+              20,
+              16,
+              32,
+            ).clearingFloatingBar,
             sliver: SliverList.list(
               children: [
                 const _OngoingTournamentCard(),

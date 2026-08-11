@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../data/sync/sync_controller.dart';
 import '../../../data/sync/sync_status.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/floating_bar_inset.dart';
 import '../../../shared/widgets/section_label.dart';
 
 /// Account, sync state and the two buttons that resolve a disagreement.
@@ -23,7 +24,7 @@ class AccountScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsAccount)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32).clearingFloatingBar,
         children: [
           if (!status.configured)
             const _NotConfiguredCard()

@@ -11,6 +11,7 @@ import '../../../data/db/app_database.dart';
 import '../../../data/models/enums.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/floating_bar_inset.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../providers/tournament_providers.dart';
 
@@ -25,10 +26,12 @@ class TournamentsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navTournaments)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRoute.newTournament.path),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.actionNewTournament),
+      floatingActionButton: LiftedFab(
+        child: FloatingActionButton.extended(
+          onPressed: () => context.push(AppRoute.newTournament.path),
+          icon: const Icon(Icons.add),
+          label: Text(l10n.actionNewTournament),
+        ),
       ),
       body: Column(
         children: [
@@ -42,7 +45,12 @@ class TournamentsScreen extends ConsumerWidget {
                 message: l10n.tournamentsEmptyHint,
               ),
               AsyncData(:final value) => ListView.separated(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+                padding: const EdgeInsets.fromLTRB(
+                  16,
+                  16,
+                  16,
+                  96,
+                ).clearingFloatingBar,
                 itemCount: value.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 10),
                 itemBuilder: (context, index) =>

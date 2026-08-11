@@ -1,10 +1,11 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/routes.dart';
 import '../../../data/db/app_database.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/floating_bar_inset.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../providers/deck_filter_provider.dart';
 import 'widgets/deck_tile.dart';
@@ -34,15 +35,17 @@ class ArchetypeDecksScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(archetype, overflow: TextOverflow.ellipsis)),
-      floatingActionButton: FloatingActionButton.extended(
-        // Opens the editor already on this archetype: adding a build from
-        // inside an archetype can only mean a build of that archetype.
-        onPressed: () => context.push(
-          '${AppRoute.newDeck.path}'
-          '?archetype=${Uri.encodeQueryComponent(archetype)}',
+      floatingActionButton: LiftedFab(
+        child: FloatingActionButton.extended(
+          // Opens the editor already on this archetype: adding a build from
+          // inside an archetype can only mean a build of that archetype.
+          onPressed: () => context.push(
+            '${AppRoute.newDeck.path}'
+            '?archetype=${Uri.encodeQueryComponent(archetype)}',
+          ),
+          icon: const Icon(Icons.add),
+          label: Text(l10n.deckNew),
         ),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.deckNew),
       ),
       body: mine.isEmpty
           // Reachable by deleting the last build while standing here, which
@@ -53,7 +56,12 @@ class ArchetypeDecksScreen extends ConsumerWidget {
               message: l10n.decksEmptyHint,
             )
           : ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+              padding: const EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                96,
+              ).clearingFloatingBar,
               itemCount: mine.length,
               separatorBuilder: (_, _) => const SizedBox(height: 10),
               itemBuilder: (context, index) => DeckTile(deck: mine[index]),

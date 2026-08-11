@@ -8,6 +8,7 @@ import '../../../data/db/app_database.dart';
 
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/layout/floating_bar_inset.dart';
 import '../../../shared/widgets/section_label.dart';
 import '../../decks/providers/deck_filter_provider.dart';
 import '../domain/life_game.dart';
@@ -76,7 +77,7 @@ class _SetupState extends ConsumerState<_Setup> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.lifeTitle)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32).clearingFloatingBar,
         children: [
           Text(
             l10n.lifeSetupHint,
