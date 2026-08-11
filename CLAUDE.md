@@ -100,6 +100,24 @@ Le chiamate a Supabase non passano mai dalla cache — sono cross-origin e il fe
 handler esce subito. Una risposta vecchia servita offline sembrerebbe il cloud che dà
 ragione a un dispositivo che invece è indietro.
 
+### Icone
+
+I PNG in `web/icons/` sono generati, non disegnati: la sorgente è
+`design/app-icon.svg`, e `design/app-icon-maskable.svg` è la stessa immagine a
+tutto campo (angoli non arrotondati, niente cornice) per chi applica una
+maschera propria. Si rigenerano con Chrome headless:
+
+```bash
+chrome --headless=new --disable-gpu --hide-scrollbars \
+  --force-device-scale-factor=1 --default-background-color=00000000 \
+  --screenshot=Icon-512.png --window-size=512,512 <pagina che incorpora l'svg>
+```
+
+Gli `apple-touch-icon` di `index.html` puntano alle maskable, ed è voluto: iOS
+applica la sua maschera arrotondata e riempirebbe di nero gli angoli che
+l'icona sagomata lascia trasparenti. Il soggetto sta dentro il cerchio all'80%
+del lato, che è la zona che Android non ritaglia.
+
 ### Asset web di Drift
 
 `web/sqlite3.wasm` e `web/drift_worker.js` sono file binari scaricati a mano, non

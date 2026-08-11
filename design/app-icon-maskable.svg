@@ -1,0 +1,47 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="35%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#FB923C"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2E2A5C"/>
+      <stop offset="100%" stop-color="#1E1B4B"/>
+    </linearGradient>
+    <linearGradient id="bar1" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#F472B6"/>
+      <stop offset="100%" stop-color="#FB923C"/>
+    </linearGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect x="0" y="0" width="1024" height="1024" rx="0" fill="url(#bg)"/>
+
+  <!-- Single upright card -->
+  <g transform="translate(512,512)" filter="url(#soft)">
+    <rect x="-210" y="-290" width="420" height="580" rx="40" fill="url(#card)"/>
+    <rect x="-210" y="-290" width="420" height="580" rx="40" fill="none" stroke="#A78BFA" stroke-opacity="0.4" stroke-width="6"/>
+
+    <!-- top accent bar of the card (like a TCG name plate) -->
+    <rect x="-170" y="-250" width="340" height="46" rx="14" fill="#FFFFFF" fill-opacity="0.08"/>
+
+    <!-- inner "artwork window" showing the chart -->
+    <rect x="-170" y="-180" width="340" height="300" rx="20" fill="#0F0E2C"/>
+
+    <!-- trend line only, centered in the window -->
+    <polyline points="-130,40 -45,-40 40,20 130,-110" fill="none" stroke="#FDE68A" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="-130" cy="40" r="14" fill="#FDE68A"/>
+    <circle cx="-45" cy="-40" r="14" fill="#FDE68A"/>
+    <circle cx="40" cy="20" r="14" fill="#FDE68A"/>
+    <circle cx="130" cy="-110" r="16" fill="#FDE68A"/>
+
+    <!-- bottom text lines of the card -->
+    <rect x="-140" y="160" width="180" height="16" rx="8" fill="#FFFFFF" fill-opacity="0.25"/>
+    <rect x="-140" y="192" width="120" height="16" rx="8" fill="#FFFFFF" fill-opacity="0.18"/>
+
+  </g>
+</svg>
