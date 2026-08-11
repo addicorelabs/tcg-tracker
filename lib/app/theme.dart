@@ -201,19 +201,25 @@ abstract final class AppTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
+        // A shade above the page rather than below it: the bar is a floating
+        // pill (see `ShellScaffold`), and it can only read as floating if it is
+        // lighter than what it floats over.
         backgroundColor: isDark
-            ? colorScheme.surfaceContainerLowest
+            ? colorScheme.surfaceContainerHigh
             : colorScheme.surface,
         indicatorColor: colorScheme.primary.withValues(alpha: 0.20),
         elevation: 0,
-        // Material's own default. A shorter bar does not shrink its contents,
-        // it crops them: at 68 the labels lost their bottom few pixels.
-        height: 80,
+        // A shorter bar does not shrink its contents, it crops them: at 68 the
+        // labels lost their bottom few pixels.
+        height: 72,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(
-            fontSize: 11,
-            letterSpacing: 0.4,
+            // Small and tightly tracked because the pill gives up screen width
+            // to its margins, and "Impostazioni" has to fit in a fifth of what
+            // is left.
+            fontSize: 10,
+            letterSpacing: 0.1,
             fontFamilyFallback: _fontFallback,
             fontWeight: states.contains(WidgetState.selected)
                 ? FontWeight.w700

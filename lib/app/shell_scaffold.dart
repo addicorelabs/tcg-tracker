@@ -46,24 +46,10 @@ class ShellScaffold extends StatelessWidget {
 
     return Scaffold(
       body: navigationShell,
-      // The bar has a fixed height and five fixed slots, so it cannot grow with
-      // the system text size — past a point the labels are simply cut off, and
-      // "Impostazioni" is one character away from its slot at normal size. The
-      // rest of the app still scales; only this strip is held back.
-      bottomNavigationBar: MediaQuery.withClampedTextScaling(
-        maxScaleFactor: 1.1,
-        child: NavigationBar(
-          selectedIndex: navigationShell.currentIndex,
-          onDestinationSelected: _goToBranch,
-          destinations: [
-            for (final destination in destinations)
-              NavigationDestination(
-                icon: Icon(destination.icon),
-                selectedIcon: Icon(destination.selectedIcon),
-                label: destination.label,
-              ),
-          ],
-        ),
+      bottomNavigationBar: _FloatingNavigationBar(
+        selectedIndex: navigationShell.currentIndex,
+        onDestinationSelected: _goToBranch,
+        destinations: destinations,
       ),
     );
   }
@@ -88,6 +74,73 @@ class ShellScaffold extends StatelessWidget {
     _Destination(l10n.navDecks, Icons.style_outlined, Icons.style),
     _Destination(l10n.navSettings, Icons.settings_outlined, Icons.settings),
   ];
+}
+
+/// The bottom bar as a rounded pill inset from the edges of the screen.
+///
+/// It sits in the scaffold's bottom slot rather than over the body, so it takes
+/// its own room and nothing scrolls underneath it. That costs the effect of
+/// content sliding behind the bar, and buys not having to keep a bottom padding
+/// in step across every scrolling screen in the app — get that wrong on one of
+/// them and the last row of the list is unreachable.
+class _FloatingNavigationBar extends StatelessWidget {
+  const _FloatingNavigationBar({
+    required this.selectedIndex,
+    required this.onDestinationSelected,
+    required this.destinations,
+  });
+
+  final int selectedIndex;
+  final ValueChanged<int> onDestinationSelected;
+  final List<_Destination> destinations;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    const radius = BorderRadius.all(Radius.circular(26));
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            border: Border.all(color: colors.outlineVariant),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.32),
+                blurRadius: 20,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: radius,
+            // The bar has a fixed height and five fixed slots, so it cannot
+            // grow with the system text size — past a point the labels are
+            // simply cut off. The rest of the app still scales; only this strip
+            // is held back.
+            child: MediaQuery.withClampedTextScaling(
+              maxScaleFactor: 1.1,
+              child: NavigationBar(
+                selectedIndex: selectedIndex,
+                onDestinationSelected: onDestinationSelected,
+                destinations: [
+                  for (final destination in destinations)
+                    NavigationDestination(
+                      icon: Icon(destination.icon),
+                      selectedIcon: Icon(destination.selectedIcon),
+                      label: destination.label,
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _Destination {
