@@ -22,7 +22,7 @@
 
   <!-- No <meta name="viewport"> here on purpose: Flutter Web injects its own at
        startup and replaces any tag found in this file, so declaring one only
-       produces a console warning. -->
+       produces a console warning. It is patched instead, further down. -->
   <!-- The app's own background, not an accent: this colour paints the browser
        chrome and the splash screen, and anything else shows as a coloured band
        above the first frame. One value rather than a light/dark pair because
@@ -75,6 +75,27 @@
       visibility: hidden;
     }
   </style>
+
+  <!-- The viewport Flutter Web writes for itself is
+       "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+       and nothing more. Without viewport-fit=cover iOS lays the page out inside
+       the safe area, so the app stops below the status bar and env(safe-area-*)
+       is zero — which is the black band this exists to remove.
+
+       Declaring the tag in this file does not work: the engine removes whatever
+       it finds and appends its own. So the tag is waited for and then extended,
+       which is a change Safari does apply. -->
+  <script>
+    (function () {
+      var observer = new MutationObserver(function () {
+        var meta = document.querySelector('meta[name=viewport]');
+        if (!meta || meta.content.indexOf('viewport-fit') !== -1) return;
+        meta.content += ', viewport-fit=cover';
+        observer.disconnect();
+      });
+      observer.observe(document.head, { childList: true });
+    })();
+  </script>
 </head>
 <body>
   <!--
@@ -87,10 +108,10 @@
   -->
   <script src="flutter_bootstrap.js" async></script>
 
-  <!-- The app asks for this once, on its first frame. Read live rather than
-       computed here and stored: env(safe-area-inset-top) resolves to zero until
-       the viewport is declared viewport-fit=cover, and it is Flutter Web that
-       declares it, while the engine starts up. -->
+  <!-- Read live on every call rather than computed here and stored:
+       env(safe-area-inset-top) resolves to zero until Safari has applied the
+       viewport-fit patched in above, which can be a frame later than the app's
+       first build. The app measures again once the frame is on screen. -->
   <div id="safe-area-probe"></div>
   <script>
     window.statusBarInset = function () {
