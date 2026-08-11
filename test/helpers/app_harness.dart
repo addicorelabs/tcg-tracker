@@ -6,7 +6,6 @@ import 'package:tcg_tracker/app/app.dart';
 import 'package:tcg_tracker/data/db/app_database.dart';
 import 'package:tcg_tracker/data/db/database_provider.dart';
 import 'package:tcg_tracker/features/settings/providers/app_settings_provider.dart';
-import 'package:tcg_tracker/shared/layout/floating_bar_inset.dart';
 
 import 'test_database.dart';
 
@@ -61,28 +60,32 @@ Future<void> unmount(WidgetTester tester) async {
   await tester.pump(const Duration(seconds: 5));
 }
 
-/// Taps something that may be sitting under the floating navigation bar.
+/// Taps something that may be sitting under one of the two bars.
 ///
-/// The bar is drawn over the body, so a widget can be well inside the viewport
-/// and still be covered: `ensureVisible` is satisfied by the first condition
-/// and blind to the second, and `tap` then lands on the bar instead. This
-/// scrolls the last [FloatingBar.inset] pixels out of the way as well.
+/// Both bars are drawn over the body, so a widget can be well inside the
+/// viewport and still be covered. `ensureVisible` is satisfied by the first
+/// condition and blind to the second — worse, it parks its target flush against
+/// the top of the viewport, which is exactly where the app bar is — and the tap
+/// then lands on the bar. Scrolling by the bar's own height fixes it.
 ///
-/// Use it for anything low on a scrolling screen. A plain `tap` that has worked
-/// for months will start missing the moment a field is added above the target.
-Future<void> tapClearOfNavBar(WidgetTester tester, Finder finder) async {
-  await tester.ensureVisible(finder);
-  await tester.pumpAndSettle();
-
-  final view = tester.view;
-  final screenBottom = view.physicalSize.height / view.devicePixelRatio;
-  final clearance = screenBottom - FloatingBar.inset - 8;
-  final bottom = tester.getBottomLeft(finder).dy;
-
-  if (bottom > clearance) {
-    await tester.drag(finder, Offset(0, clearance - bottom));
-    await tester.pumpAndSettle();
+/// Use it for anything at either end of a scrolling screen. A plain `tap` that
+/// has worked for months starts missing the moment a field is added above the
+/// target and pushes it into a bar.
+Future<void> tapClearOfBars(WidgetTester tester, Finder finder) async {
+  // `scrollUntilVisible` first, because it builds a row the list has not
+  // reached yet — but it stops as soon as the finder matches anything, which
+  // can still be off the fold, and it throws on nothing to scroll.
+  if (finder.evaluate().isEmpty) {
+    await tester.scrollUntilVisible(finder, 120);
   }
+
+  // Centred, not merely visible. `tester.ensureVisible` parks its target flush
+  // against the top of the viewport, which is where the app bar is, and then a
+  // tap lands on the bar instead. Nudging it back afterwards does not work:
+  // the drag would have to start on the covered widget, so the drag hits the
+  // bar too.
+  await Scrollable.ensureVisible(tester.element(finder), alignment: 0.5);
+  await tester.pumpAndSettle();
 
   await tester.tap(finder);
   await tester.pumpAndSettle();

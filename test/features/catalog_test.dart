@@ -31,21 +31,6 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Brings [target] on screen, whether it is merely scrolled past or not
-  /// mounted at all.
-  ///
-  /// Both steps are needed: `scrollUntilVisible` builds a row the list has not
-  /// reached yet but stops as soon as the finder matches anything, which can
-  /// still be below the fold; `ensureVisible` finishes the job but throws on a
-  /// row that does not exist yet.
-  Future<void> reveal(WidgetTester tester, Finder target) async {
-    if (target.evaluate().isEmpty) {
-      await tester.scrollUntilVisible(target, 120);
-    }
-    await tester.ensureVisible(target);
-    await tester.pumpAndSettle();
-  }
-
   /// Opens the row menu of [entry] and picks [action].
   Future<void> chooseAction(
     WidgetTester tester,
@@ -57,9 +42,7 @@ void main() {
       matching: find.byIcon(Icons.more_vert),
     );
 
-    await reveal(tester, menu);
-    await tester.tap(menu);
-    await tester.pumpAndSettle();
+    await tapClearOfBars(tester, menu);
     await tester.tap(find.text(action).last);
     await tester.pumpAndSettle();
   }
@@ -69,9 +52,7 @@ void main() {
     Finder button,
     String name,
   ) async {
-    await reveal(tester, button);
-    await tester.tap(button);
-    await tester.pumpAndSettle();
+    await tapClearOfBars(tester, button);
 
     await tester.enterText(find.byType(TextField).last, name);
     await tester.pumpAndSettle();

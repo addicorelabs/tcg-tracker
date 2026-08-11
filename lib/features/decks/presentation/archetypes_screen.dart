@@ -6,8 +6,9 @@ import '../../../data/db/app_database.dart';
 import '../../../data/repositories/archetype_repository.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/glass_app_bar.dart';
 import '../providers/deck_filter_provider.dart';
 
 /// Manages the controlled list of opponent archetypes, one list per format.
@@ -33,7 +34,8 @@ class _ArchetypesScreenState extends ConsumerState<ArchetypesScreen> {
     final formatId = _formatId;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.archetypesTitle)),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(title: Text(l10n.archetypesTitle)),
       floatingActionButton: formatId == null
           ? null
           : LiftedFab(
@@ -46,6 +48,9 @@ class _ArchetypesScreenState extends ConsumerState<ArchetypesScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // The hint and the format chips are fixed rather than scrolling, so
+          // they are pushed clear of the bar; only the list below them moves.
+          const SizedBox(height: TopBar.inset),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: Text(

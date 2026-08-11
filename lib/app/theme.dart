@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../shared/layout/floating_bar_inset.dart';
+import '../shared/layout/bar_insets.dart';
 
 /// Colours that carry meaning in this app and therefore cannot live in the
 /// generated [ColorScheme]: the identity of each game and the outcome of a

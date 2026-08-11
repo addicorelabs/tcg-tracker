@@ -9,8 +9,9 @@ import '../../../data/db/app_database.dart';
 
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/glass_app_bar.dart';
 import '../providers/deck_filter_provider.dart';
 
 /// The deck library: everything the user plays, grouped by game and format.
@@ -25,7 +26,8 @@ class DecksScreen extends ConsumerWidget {
     final shelf = ref.watch(archetypeShelfProvider);
 
     return Scaffold(
-      appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
         title: Text(l10n.navDecks),
         actions: [
           IconButton(
@@ -63,6 +65,9 @@ class DecksScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
+          // The selectors are fixed rather than scrolling, so they are pushed
+          // clear of the bar instead of passing under it; only the list moves.
+          const SizedBox(height: TopBar.inset),
           const _GameSelector(),
           const _FormatFilter(),
           const Divider(height: 1),

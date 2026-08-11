@@ -12,9 +12,10 @@ import '../../../data/repositories/catalog_repository.dart';
 import '../../../data/repositories/deck_repository.dart';
 import '../../../data/repositories/tournament_repository.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
 import '../../../shared/widgets/deck_label.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/glass_app_bar.dart';
 import '../../../shared/widgets/number_stepper.dart';
 import '../../../shared/widgets/section_label.dart';
 import '../../decks/providers/deck_filter_provider.dart';
@@ -244,7 +245,8 @@ class _TournamentFormState extends ConsumerState<_TournamentForm> {
     }
 
     return Scaffold(
-      appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
         title: Text(
           _isEditing ? l10n.tournamentEdit : l10n.actionNewTournament,
         ),
@@ -264,7 +266,7 @@ class _TournamentFormState extends ConsumerState<_TournamentForm> {
             16,
             16,
             32,
-          ).clearingFloatingBar,
+          ).clearingFloatingBar.clearingAppBar,
           children: [
             // The game list arrives from the database a frame later, and a
             // SegmentedButton with no segments asserts.

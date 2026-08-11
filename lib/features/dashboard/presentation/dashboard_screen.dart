@@ -9,7 +9,7 @@ import '../../../core/utils/catalog_names.dart';
 import '../../../data/db/app_database.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
 import '../../../shared/widgets/section_label.dart';
 import '../../../shared/widgets/stat_tile.dart';
 import '../../tournaments/providers/tournament_providers.dart';

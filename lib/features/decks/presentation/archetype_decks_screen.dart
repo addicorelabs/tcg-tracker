@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../app/routes.dart';
 import '../../../data/db/app_database.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/glass_app_bar.dart';
 import '../providers/deck_filter_provider.dart';
 import 'widgets/deck_tile.dart';
 
@@ -34,7 +35,10 @@ class ArchetypeDecksScreen extends ConsumerWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(archetype, overflow: TextOverflow.ellipsis)),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: Text(archetype, overflow: TextOverflow.ellipsis),
+      ),
       floatingActionButton: LiftedFab(
         child: FloatingActionButton.extended(
           // Opens the editor already on this archetype: adding a build from
@@ -61,7 +65,7 @@ class ArchetypeDecksScreen extends ConsumerWidget {
                 16,
                 16,
                 96,
-              ).clearingFloatingBar,
+              ).clearingFloatingBar.clearingAppBar,
               itemCount: mine.length,
               separatorBuilder: (_, _) => const SizedBox(height: 10),
               itemBuilder: (context, index) => DeckTile(deck: mine[index]),

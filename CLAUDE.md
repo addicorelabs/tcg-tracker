@@ -155,14 +155,21 @@ curl -L -o web/sqlite3.wasm    https://github.com/simolus3/sqlite3.dart/releases
 - Le regole di calcolo delle statistiche vivono solo in `lib/core/stats/` e non vengono
   riscritte nelle singole schermate
 - Ogni schermata deve funzionare senza rete
-- La barra di navigazione è una pillola che **galleggia sopra** il corpo
-  (`extendBody: true`), così l'app si vede tutt'intorno. Ogni schermata che
-  scorre deve quindi lasciarle posto da sola: `.clearingFloatingBar` sul padding
-  di ciò che scorre, e `LiftedFab` intorno a un FAB. Le misure stanno solo in
-  `shared/layout/floating_bar_inset.dart`, costanti e non lette da `MediaQuery`,
-  perché lo `Scaffold` azzera il padding inferiore nello slot del FAB — cioè
-  proprio dove serve. Dimenticarsene su una schermata rende irraggiungibile
-  l'ultima riga della sua lista
+- **Le due barre galleggiano sopra il corpo**, così l'app si vede tutt'intorno:
+  la pillola di navigazione (`extendBody: true`) e la barra del titolo
+  (`extendBodyBehindAppBar: true` più `GlassAppBar`). Ogni schermata deve quindi
+  lasciar loro posto da sola: `.clearingFloatingBar` e `.clearingAppBar` sul
+  padding di ciò che scorre, e `LiftedFab` intorno a un FAB. Le misure stanno
+  solo in `shared/layout/bar_insets.dart`, costanti e non lette da `MediaQuery`:
+  in basso perché lo `Scaffold` azzera il padding inferiore nello slot del FAB,
+  in alto perché lo pubblica *dentro* il body mentre il padding di una `ListView`
+  viene costruito fuori. Dimenticarsene rende irraggiungibile la prima o
+  l'ultima riga della lista
+- La barra del titolo **sfoca ciò che le passa sotto**. Non è decorazione: un
+  titolo steso su carte e numeri in movimento diventa illeggibile
+- Dove l'intestazione è fissa e non scorre (Tornei, Mazzi, Archetipi) i filtri
+  vengono spinti sotto la barra con uno spazio alto `TopBar.inset`, e scorre
+  solo la lista sotto di loro
 - Un mazzo, un formato o un archetipo con dati storici collegati si archivia, non si
   cancella: lo storico dei tornei deve restare leggibile
 - Il **contatore punti vita** (`features/life/`) non scrive niente nel database: è uno

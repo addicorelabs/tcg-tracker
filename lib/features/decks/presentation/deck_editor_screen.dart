@@ -12,7 +12,8 @@ import '../../../data/models/enums.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../data/repositories/deck_repository.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
+import '../../../shared/widgets/glass_app_bar.dart';
 import '../../../shared/widgets/archetype_picker.dart';
 import '../../../shared/widgets/mana_pips.dart';
 import '../../../shared/widgets/section_label.dart';
@@ -273,7 +274,8 @@ class _DeckFormState extends ConsumerState<_DeckForm> {
     }
 
     return Scaffold(
-      appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
         title: Text(_isEditing ? l10n.deckEdit : l10n.deckNew),
         actions: [
           TextButton(
@@ -291,7 +293,7 @@ class _DeckFormState extends ConsumerState<_DeckForm> {
             16,
             16,
             32,
-          ).clearingFloatingBar,
+          ).clearingFloatingBar.clearingAppBar,
           children: [
             // The game list arrives from the database a frame later, and a
             // SegmentedButton with no segments asserts.

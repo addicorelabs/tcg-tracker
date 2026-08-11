@@ -8,9 +8,10 @@ import '../../../data/db/app_database.dart';
 import '../../../data/repositories/analytics_repository.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
 import '../../../shared/widgets/deck_label.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/glass_app_bar.dart';
 import '../../../shared/widgets/section_label.dart';
 import '../../../shared/widgets/stat_tile.dart';
 import '../providers/analytics_providers.dart';
@@ -31,9 +32,15 @@ class AnalyticsScreen extends ConsumerWidget {
     final matches = ref.watch(analyticsMatchesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.navAnalytics)),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(title: Text(l10n.navAnalytics)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32).clearingFloatingBar,
+        padding: const EdgeInsets.fromLTRB(
+          16,
+          8,
+          16,
+          32,
+        ).clearingFloatingBar.clearingAppBar,
         children: [
           const _Filters(),
           const SizedBox(height: 24),

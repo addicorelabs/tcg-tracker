@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,7 +9,8 @@ import '../../../data/models/enums.dart';
 import '../../../data/repositories/archetype_repository.dart';
 import '../../../data/repositories/match_repository.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
+import '../../../shared/widgets/glass_app_bar.dart';
 import '../../../shared/widgets/archetype_picker.dart';
 import '../../../shared/widgets/game_counters.dart';
 import '../../../shared/widgets/number_stepper.dart';
@@ -255,7 +256,8 @@ class _RoundFormState extends ConsumerState<_RoundForm> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
         title: Text(_isEditing ? l10n.roundEdit : l10n.roundNew),
         actions: [
           if (_isEditing)
@@ -272,7 +274,12 @@ class _RoundFormState extends ConsumerState<_RoundForm> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32).clearingFloatingBar,
+        padding: const EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          32,
+        ).clearingFloatingBar.clearingAppBar,
         children: [
           Row(
             children: [

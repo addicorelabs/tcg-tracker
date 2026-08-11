@@ -11,9 +11,10 @@ import '../../../data/repositories/archetype_repository.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../data/repositories/tournament_repository.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
 import '../../../shared/widgets/deck_label.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/glass_app_bar.dart';
 import '../../../shared/widgets/result_chip.dart';
 import '../../../shared/widgets/section_label.dart';
 import '../../decks/providers/deck_filter_provider.dart';
@@ -54,7 +55,8 @@ class _Detail extends ConsumerWidget {
         const <Match>[];
 
     return Scaffold(
-      appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
         title: Text(tournament.name, overflow: TextOverflow.ellipsis),
         actions: [
           PopupMenuButton<_DetailAction>(
@@ -93,7 +95,12 @@ class _Detail extends ConsumerWidget {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96).clearingFloatingBar,
+        padding: const EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          96,
+        ).clearingFloatingBar.clearingAppBar,
         children: [
           _Header(tournament: tournament),
           const SizedBox(height: 24),

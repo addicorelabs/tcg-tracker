@@ -11,8 +11,9 @@ import '../../../data/db/app_database.dart';
 import '../../../data/models/enums.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/glass_app_bar.dart';
 import '../providers/tournament_providers.dart';
 
 /// Every tournament the user has recorded, newest first.
@@ -25,7 +26,8 @@ class TournamentsScreen extends ConsumerWidget {
     final tournaments = ref.watch(tournamentsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.navTournaments)),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(title: Text(l10n.navTournaments)),
       floatingActionButton: LiftedFab(
         child: FloatingActionButton.extended(
           onPressed: () => context.push(AppRoute.newTournament.path),
@@ -33,34 +35,39 @@ class TournamentsScreen extends ConsumerWidget {
           label: Text(l10n.actionNewTournament),
         ),
       ),
-      body: Column(
-        children: [
-          const _Filters(),
-          const Divider(height: 1),
-          Expanded(
-            child: switch (tournaments) {
-              AsyncData(:final value) when value.isEmpty => EmptyState(
-                icon: Icons.emoji_events_outlined,
-                title: l10n.tournamentsEmpty,
-                message: l10n.tournamentsEmptyHint,
-              ),
-              AsyncData(:final value) => ListView.separated(
-                padding: const EdgeInsets.fromLTRB(
-                  16,
-                  16,
-                  16,
-                  96,
-                ).clearingFloatingBar,
-                itemCount: value.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 10),
-                itemBuilder: (context, index) =>
-                    _TournamentCard(tournament: value[index]),
-              ),
-              AsyncError() => Center(child: Text(l10n.errorGeneric)),
-              _ => const SizedBox.shrink(),
-            },
-          ),
-        ],
+      // The filters are fixed rather than scrolling, so they are pushed clear
+      // of the bar instead of passing under it; only the list below them moves.
+      body: Padding(
+        padding: const EdgeInsets.only(top: TopBar.inset),
+        child: Column(
+          children: [
+            const _Filters(),
+            const Divider(height: 1),
+            Expanded(
+              child: switch (tournaments) {
+                AsyncData(:final value) when value.isEmpty => EmptyState(
+                  icon: Icons.emoji_events_outlined,
+                  title: l10n.tournamentsEmpty,
+                  message: l10n.tournamentsEmptyHint,
+                ),
+                AsyncData(:final value) => ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(
+                    16,
+                    16,
+                    16,
+                    96,
+                  ).clearingFloatingBar,
+                  itemCount: value.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
+                  itemBuilder: (context, index) =>
+                      _TournamentCard(tournament: value[index]),
+                ),
+                AsyncError() => Center(child: Text(l10n.errorGeneric)),
+                _ => const SizedBox.shrink(),
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

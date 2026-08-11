@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// The two bars the app draws over its content, and the room they need.
+///
+/// Both ends of every screen work the same way: the bar is painted on top of
+/// the body rather than beside it, so the app carries on behind it, and the
+/// screen has to leave the room itself.
+///
 /// Geometry of the floating navigation bar drawn by `ShellScaffold`.
 ///
 /// The bar floats over the body rather than sitting beside it, so that the app
@@ -33,10 +39,29 @@ abstract final class FloatingBar {
   static const inset = height + bottomMargin;
 }
 
-extension FloatingBarPadding on EdgeInsets {
+/// Room the app bar needs at the top of a screen.
+///
+/// A `Scaffold` built with `extendBodyBehindAppBar: true` does publish this
+/// through `MediaQuery`, and reading it back that way still would not work: it
+/// publishes it *inside* the body, while a `ListView(padding: ...)` is built
+/// outside, from the context of the widget holding the `Scaffold`. The value
+/// that arrives there is the one from before the bar, which is zero.
+///
+/// A constant is also exactly right here. The bar is the standard toolbar
+/// height, and installed to a home screen Flutter Web reports no status bar
+/// inset to add to it — the same reason the bottom is a constant too.
+abstract final class TopBar {
+  static const inset = kToolbarHeight;
+}
+
+extension BarPadding on EdgeInsets {
   /// This padding, with room for the floating navigation bar underneath it.
   EdgeInsets get clearingFloatingBar =>
       this + const EdgeInsets.only(bottom: FloatingBar.inset);
+
+  /// This padding, with room for the app bar above it.
+  EdgeInsets get clearingAppBar =>
+      this + const EdgeInsets.only(top: TopBar.inset);
 }
 
 /// Wraps a floating action button so it clears the floating navigation bar.

@@ -12,7 +12,8 @@ import '../../../data/repositories/catalog_repository.dart';
 import '../../../data/sync/sync_controller.dart';
 import '../../../data/sync/sync_status.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
+import '../../../shared/widgets/glass_app_bar.dart';
 import '../../../shared/widgets/section_label.dart';
 import '../providers/app_settings_provider.dart';
 
@@ -27,9 +28,15 @@ class SettingsScreen extends ConsumerWidget {
     final notifier = ref.read(appSettingsProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.navSettings)),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(title: Text(l10n.navSettings)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32).clearingFloatingBar,
+        padding: const EdgeInsets.fromLTRB(
+          16,
+          8,
+          16,
+          32,
+        ).clearingFloatingBar.clearingAppBar,
         children: [
           SectionLabel(l10n.navSettings),
           const SizedBox(height: 12),

@@ -8,7 +8,8 @@ import '../../../data/db/app_database.dart';
 
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
+import '../../../shared/widgets/glass_app_bar.dart';
 import '../../../shared/widgets/section_label.dart';
 import '../../decks/providers/deck_filter_provider.dart';
 import '../domain/life_game.dart';
@@ -75,9 +76,15 @@ class _SetupState extends ConsumerState<_Setup> {
     final starting = int.tryParse(_life.text.trim()) ?? 0;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.lifeTitle)),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(title: Text(l10n.lifeTitle)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32).clearingFloatingBar,
+        padding: const EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          32,
+        ).clearingFloatingBar.clearingAppBar,
         children: [
           Text(
             l10n.lifeSetupHint,

@@ -6,7 +6,8 @@ import '../../../core/utils/catalog_names.dart';
 import '../../../data/db/app_database.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/layout/bar_insets.dart';
+import '../../../shared/widgets/glass_app_bar.dart';
 
 /// Adds, renames, hides and deletes games and the formats under them.
 ///
@@ -26,9 +27,15 @@ class CatalogScreen extends ConsumerWidget {
     final games = ref.watch(allGamesProvider).valueOrNull ?? const <Game>[];
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.catalogTitle)),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(title: Text(l10n.catalogTitle)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32).clearingFloatingBar,
+        padding: const EdgeInsets.fromLTRB(
+          16,
+          12,
+          16,
+          32,
+        ).clearingFloatingBar.clearingAppBar,
         children: [
           Text(
             l10n.catalogHint,

@@ -64,7 +64,7 @@ void main() {
     await tester.tap(find.text('New tournament'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField).at(0), name);
-    await tapClearOfNavBar(tester, find.widgetWithText(ChoiceChip, eventType));
+    await tapClearOfBars(tester, find.widgetWithText(ChoiceChip, eventType));
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
   }
@@ -317,7 +317,7 @@ void main() {
 
     await tester.tap(find.text('New tournament'));
     await tester.pumpAndSettle();
-    await tapClearOfNavBar(tester, find.widgetWithText(ChoiceChip, 'OTS'));
+    await tapClearOfBars(tester, find.widgetWithText(ChoiceChip, 'OTS'));
 
     // Reaching the event types scrolled the game buttons off the top, and a
     // form this long unmounts what it scrolls past. Back to the top rather than
