@@ -110,8 +110,14 @@ maschera propria. Si rigenerano con Chrome headless:
 ```bash
 chrome --headless=new --disable-gpu --hide-scrollbars \
   --force-device-scale-factor=1 --default-background-color=00000000 \
-  --screenshot=Icon-512.png --window-size=512,512 <pagina che incorpora l'svg>
+  --screenshot=full.png --window-size=1024,1024 <pagina che incorpora l'svg>
 ```
+
+**Si renderizza una volta sola a 1024 e si scala da lì.** Chiedere a Chrome una
+finestra da 192 non dà un'immagine da 192: su Windows la finestra ha una
+larghezza minima, lo screenshot esce della misura chiesta ma contiene quasi
+solo pagina vuota con una fetta di immagine sul bordo. Non fallisce, produce un
+PNG valido e sbagliato — ed è già finito su una home screen.
 
 Gli `apple-touch-icon` di `index.html` puntano alle maskable, ed è voluto: iOS
 applica la sua maschera arrotondata e riempirebbe di nero gli angoli che
