@@ -99,42 +99,43 @@ class _FloatingNavigationBar extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     const radius = BorderRadius.all(Radius.circular(26));
 
+    // `minimum` rather than plain padding: installed to the home screen, Flutter
+    // Web reports no safe area at all, so relying on the inset alone would sit
+    // the pill on top of the home indicator. Where the inset does arrive, it
+    // wins.
     return SafeArea(
       top: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: radius,
-            border: Border.all(color: colors.outlineVariant),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.32),
-                blurRadius: 20,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: radius,
-            // The bar has a fixed height and five fixed slots, so it cannot
-            // grow with the system text size — past a point the labels are
-            // simply cut off. The rest of the app still scales; only this strip
-            // is held back.
-            child: MediaQuery.withClampedTextScaling(
-              maxScaleFactor: 1.1,
-              child: NavigationBar(
-                selectedIndex: selectedIndex,
-                onDestinationSelected: onDestinationSelected,
-                destinations: [
-                  for (final destination in destinations)
-                    NavigationDestination(
-                      icon: Icon(destination.icon),
-                      selectedIcon: Icon(destination.selectedIcon),
-                      label: destination.label,
-                    ),
-                ],
-              ),
+      minimum: const EdgeInsets.fromLTRB(10, 0, 10, 28),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: radius,
+          border: Border.all(color: colors.outlineVariant),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.32),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: radius,
+          // The bar has a fixed height and five fixed slots, so it cannot grow
+          // with the system text size — past a point the labels are simply cut
+          // off. The rest of the app still scales; only this strip is held back.
+          child: MediaQuery.withClampedTextScaling(
+            maxScaleFactor: 1.1,
+            child: NavigationBar(
+              selectedIndex: selectedIndex,
+              onDestinationSelected: onDestinationSelected,
+              destinations: [
+                for (final destination in destinations)
+                  NavigationDestination(
+                    icon: Icon(destination.icon),
+                    selectedIcon: Icon(destination.selectedIcon),
+                    label: destination.label,
+                  ),
+              ],
             ),
           ),
         ),
