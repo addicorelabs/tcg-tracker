@@ -45,6 +45,19 @@
 
   <title>TCG Tracker</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Installed on iOS, the status bar area is painted with the background of
+       <body>, not with theme-color and not with the meta tag above: an unstyled
+       body leaves a white band above the app. Flutter paints its own canvas over
+       this, so the colour only ever shows where the app itself does not reach —
+       the status bar, the home indicator, and the overscroll rubber band. -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #101017;
+    }
+  </style>
 </head>
 <body>
   <!--
