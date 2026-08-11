@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/stats/match_stats.dart';
+import '../../../core/tournaments/event_options.dart';
 import '../../../data/db/app_database.dart';
 import '../../../data/models/enums.dart';
 import '../../../data/repositories/archetype_repository.dart';
@@ -160,6 +161,16 @@ class _RoundFormState extends ConsumerState<_RoundForm> {
     if (!_isBye && _archetype == null) {
       setState(() => _archetypeMissing = true);
       messenger.showSnackBar(SnackBar(content: Text(l10n.formIncomplete)));
+      return;
+    }
+
+    // The result is never typed in, it follows from the games, so a game that
+    // has no draws is enforced here rather than by hiding a control. A round
+    // with nothing recorded is level too, and is refused for the same reason:
+    // in this game it would have had a winner.
+    if (_result == MatchResult.draw &&
+        !EventOptions.allowsDraw(widget.tournament.gameId)) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.matchNoDraws)));
       return;
     }
 

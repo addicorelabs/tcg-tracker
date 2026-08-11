@@ -176,6 +176,7 @@
   "matchGamesWon": "Vinti",
   "matchGamesLost": "Persi",
   "matchGamesDrawn": "Pari",
+  "matchNoDraws": "Un round di questo gioco non può finire in parità. Segna chi ha vinto il match.",
   "lifeTitle": "Punti vita",
   "lifeSetupHint": "Contatore da tavolo. Niente di quello che succede qui viene salvato nello storico.",
   "lifeStartingLife": "Vita iniziale",

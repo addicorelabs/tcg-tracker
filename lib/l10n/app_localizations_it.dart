@@ -547,6 +547,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get matchGamesDrawn => 'Pari';
 
   @override
+  String get matchNoDraws =>
+      'Un round di questo gioco non può finire in parità. Segna chi ha vinto il match.';
+
+  @override
   String get lifeTitle => 'Punti vita';
 
   @override

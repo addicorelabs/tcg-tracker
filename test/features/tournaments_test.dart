@@ -103,6 +103,9 @@ void main() {
     int lost = 0,
     bool isBye = false,
     String opponentDeck = 'Snake-Eye',
+    // For a save that was refused: the editor is still up with its opponent
+    // already chosen, and only the counters need touching.
+    bool alreadyOpen = false,
   }) async {
     Future<void> bump(String label, int times) async {
       if (times == 0) return;
@@ -131,14 +134,16 @@ void main() {
       }
     }
 
-    await tester.tap(find.text('New round'));
-    await tester.pumpAndSettle();
+    if (!alreadyOpen) {
+      await tester.tap(find.text('New round'));
+      await tester.pumpAndSettle();
+    }
 
     if (isBye) {
       await tester.tap(find.text('This round was a bye'));
       await tester.pumpAndSettle();
     } else {
-      await pickOpponentDeck(tester, opponentDeck);
+      if (!alreadyOpen) await pickOpponentDeck(tester, opponentDeck);
       await bump('Won', won);
       await bump('Lost', lost);
       await tester.pumpAndSettle();
@@ -361,6 +366,33 @@ void main() {
       isEmpty,
       reason: 'the round was refused, so nothing was written',
     );
+
+    await unmount(tester);
+  });
+
+  testWidgets('a Yu-Gi-Oh! round cannot be recorded level', (tester) async {
+    await createDeck();
+    await openTournamentsTab(tester);
+    await createTournament(tester);
+
+    await recordRound(tester, won: 1, lost: 1);
+
+    expect(
+      find.textContaining('cannot end level'),
+      findsOneWidget,
+      reason: 'the result follows from the games, so a level score is refused',
+    );
+    expect(
+      await harness.database.select(harness.database.matches).get(),
+      isEmpty,
+      reason: 'the round was refused, so nothing was written',
+    );
+
+    // The editor is still open, so the score can be put right without losing
+    // the opponent that was already picked.
+    await recordRound(tester, won: 1, alreadyOpen: true);
+
+    expect(find.text('1-0'), findsOneWidget);
 
     await unmount(tester);
   });

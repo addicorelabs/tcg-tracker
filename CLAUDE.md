@@ -281,6 +281,12 @@ contengono hanno tutti un fallback esplicito, mai un `else` accidentale:
 - `core/life/life_rules.dart` — vita iniziale, passi, preset. Fallback: le regole Magic
 - `core/tournaments/event_options.dart` — tipi di evento e top cut. Fallback: la lista
   neutra `_fallback` e i top cut corti
+- `core/tournaments/event_options.dart` → `allowsDraw(gameId)` — un round di
+  Yu-Gi-Oh! non può finire in parità, e siccome il risultato non si sceglie ma
+  si deduce dai game, il divieto vive nel salvataggio dell'editor round, non in
+  un controllo nascosto. Vale solo da qui in avanti: un pareggio già registrato
+  resta un pareggio, vale il suo punto e conta nelle analisi. Fallback: i
+  pareggi sono ammessi
 - `theme.dart` → `gameAccent(gameId)` — colore identitario. I due giochi di sistema
   hanno il loro, gli altri pescano da `AppColors.extraAccents` con un indice ricavato
   dai code unit dell'id (che è un uuid): stabile tra un avvio e l'altro, cosa che

@@ -698,6 +698,10 @@
   "@matchGamesDrawn": {
     "description": "Games drawn in this match"
   },
+  "matchNoDraws": "A round of this game cannot end level. Record who took the match.",
+  "@matchNoDraws": {
+    "description": "Refusal when the games entered come out equal in a game that has no draws"
+  },
   "lifeTitle": "Life points",
   "@lifeTitle": {
     "description": "Title of the life counter screen"

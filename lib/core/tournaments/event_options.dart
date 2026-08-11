@@ -45,6 +45,19 @@ abstract final class EventOptions {
   static const _yugiohTopCuts = [4, 8, 16, 32, 64];
   static const _magicTopCuts = [4, 8, 16];
 
+  /// Whether a round of this game can be recorded as a draw.
+  ///
+  /// Yu-Gi-Oh! rounds are played to a winner here, so the editor refuses a
+  /// score that comes out level. Everything else — Magic, and any game the user
+  /// adds — keeps draws, which is the safe answer for a circuit the app knows
+  /// nothing about.
+  ///
+  /// This only governs what can be *recorded from now on*. A draw already in
+  /// the database still reads back as a draw, still scores its point, and still
+  /// counts in the analytics: the rules of a tournament played last year are
+  /// not ours to rewrite.
+  static bool allowsDraw(String gameId) => gameId != Seed.yugiohId;
+
   static List<EventType> typesFor(String gameId) => switch (gameId) {
     Seed.yugiohId => _yugioh,
     Seed.magicId => _magic,

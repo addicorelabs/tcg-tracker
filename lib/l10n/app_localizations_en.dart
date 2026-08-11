@@ -548,6 +548,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get matchGamesDrawn => 'Drawn';
 
   @override
+  String get matchNoDraws =>
+      'A round of this game cannot end level. Record who took the match.';
+
+  @override
   String get lifeTitle => 'Life points';
 
   @override

@@ -1046,6 +1046,12 @@ abstract class AppLocalizations {
   /// **'Drawn'**
   String get matchGamesDrawn;
 
+  /// Refusal when the games entered come out equal in a game that has no draws
+  ///
+  /// In en, this message translates to:
+  /// **'A round of this game cannot end level. Record who took the match.'**
+  String get matchNoDraws;
+
   /// Title of the life counter screen
   ///
   /// In en, this message translates to:
