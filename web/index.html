@@ -32,10 +32,15 @@
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <!-- "black", not "black-translucent": translucent puts the page under the
-       status bar, and Flutter Web does not inset its own app bar for it, so the
-       title would sit behind the clock. -->
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <!-- "default" is the only one of the three that lets the app choose the colour
+       of the status bar. "black" means what it says — a black bar, whatever the
+       page is painted — and "black-translucent" puts the page under the bar,
+       which moves the whole view out from under its own taps.
+
+       Read once, when the app is added to the home screen, and then frozen:
+       changing it here does nothing to an app already installed, exactly like
+       the icon. -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="TCG Tracker">
   <!-- The maskable icons, which are the full-bleed ones: iOS applies its own
        rounded mask to a home screen icon, and the corners the shaped icon
@@ -66,9 +71,14 @@
     }
   </style>
 
+  <!-- theme-color goes with it. It is what colours the browser's own chrome
+       around the page when the app is opened in a tab rather than installed, and
+       leaving it on one value there would put back the band this removes. -->
   <script>
     window.setPageTint = function (css) {
       document.body.style.backgroundColor = css;
+      var meta = document.querySelector('meta[name=theme-color]');
+      if (meta) meta.content = css;
     };
   </script>
 </head>

@@ -170,10 +170,17 @@ curl -L -o web/sqlite3.wasm    https://github.com/simolus3/sqlite3.dart/releases
 - **La striscia della status bar è dipinta dalla pagina, non dall'app**, e prende
   il colore della schermata in cima: `PageTint` (`shared/layout/page_tint.dart`,
   montato nel `builder` di `MaterialApp`) segue il router e chiama
-  `setPageTint`, che scrive il `background` di `<body>` — viola dell'hero sulla
-  Home, `scaffoldBackgroundColor` altrove. È guidato dal router e non dalle
+  `setPageTint`, che scrive il `background` di `<body>` e il `theme-color` —
+  viola dell'hero sulla Home, `scaffoldBackgroundColor` altrove, entrambi dal
+  tema in vigore quindi validi anche in chiaro. È guidato dal router e non dalle
   singole schermate perché l'`initState` della prossima gira prima del `dispose`
   della precedente, e le due si darebbero battaglia.
+
+  `apple-mobile-web-app-status-bar-style` deve restare **`default`**: è l'unico
+  dei tre valori che lascia scegliere il colore alla pagina. `black` vuol dire
+  barra nera qualunque cosa ci sia sotto, e `black-translucent` è la strada
+  vietata qui sotto. Come l'icona, iOS lo legge all'installazione e lo congela:
+  cambiarlo non tocca un'app già sulla home.
 
   **Non provare di nuovo a far salire l'app sotto la status bar.** È stato fatto
   (`black-translucent` + `viewport-fit=cover` iniettato nel meta di Flutter +
