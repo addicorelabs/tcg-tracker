@@ -12,9 +12,13 @@ import '../../data/db/app_database.dart';
 /// cannot push the archetype off the row and a long archetype cannot bury the
 /// name.
 class DeckLabel extends StatelessWidget {
-  const DeckLabel({required this.deck, super.key});
+  const DeckLabel({required this.deck, this.nameStyle, super.key});
 
   final Deck deck;
+
+  /// How to set the name. The archetype keeps its own quieter style whatever
+  /// this is, so that the pairing reads the same everywhere it appears.
+  final TextStyle? nameStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +28,13 @@ class DeckLabel extends StatelessWidget {
 
     return Row(
       children: [
-        Flexible(child: Text(deck.name, overflow: TextOverflow.ellipsis)),
+        Flexible(
+          child: Text(
+            deck.name,
+            style: nameStyle,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
         if (archetype.isNotEmpty && !repeats) ...[
           const SizedBox(width: 8),
           Flexible(

@@ -12,6 +12,7 @@ import '../../../data/repositories/catalog_repository.dart';
 import '../../../data/repositories/tournament_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/widgets/deck_label.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/result_chip.dart';
 import '../../../shared/widgets/section_label.dart';
@@ -242,7 +243,7 @@ class _Header extends ConsumerWidget {
             ),
             if (deck != null) ...[
               const SizedBox(height: 6),
-              Text(deck.name, style: theme.textTheme.titleMedium),
+              DeckLabel(deck: deck, nameStyle: theme.textTheme.titleMedium),
             ],
             const SizedBox(height: 20),
             Row(

@@ -413,6 +413,26 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets(
+    'a tournament names the archetype of the deck it was played with',
+    (tester) async {
+      await createDeck(name: 'Prova', archetype: 'Snake-Eye');
+      await openTournamentsTab(tester);
+      await createTournament(tester);
+
+      expect(find.text('Prova'), findsOneWidget);
+      expect(
+        find.text('Snake-Eye'),
+        findsOneWidget,
+        reason:
+            'the deck name alone does not say what was played, and two builds '
+            'often share one',
+      );
+
+      await unmount(tester);
+    },
+  );
+
   testWidgets('a Yu-Gi-Oh! round cannot be recorded level', (tester) async {
     await createDeck();
     await openTournamentsTab(tester);
