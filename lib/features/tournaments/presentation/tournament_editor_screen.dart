@@ -13,6 +13,7 @@ import '../../../data/repositories/deck_repository.dart';
 import '../../../data/repositories/tournament_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/widgets/deck_label.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/number_stepper.dart';
 import '../../../shared/widgets/section_label.dart';
@@ -356,7 +357,7 @@ class _TournamentFormState extends ConsumerState<_TournamentForm> {
                   for (final deck in builds)
                     DropdownMenuItem(
                       value: deck.id,
-                      child: Text(deck.name, overflow: TextOverflow.ellipsis),
+                      child: DeckLabel(deck: deck),
                     ),
                 ],
                 onChanged: (value) => setState(() => _deckId = value),

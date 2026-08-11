@@ -9,6 +9,7 @@ import '../../../data/repositories/analytics_repository.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/layout/floating_bar_inset.dart';
+import '../../../shared/widgets/deck_label.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/section_label.dart';
 import '../../../shared/widgets/stat_tile.dart';
@@ -536,44 +537,8 @@ class _DeckPicker extends ConsumerWidget {
         for (final deck in decks)
           DropdownMenuItem(
             value: deck.id,
-            child: _DeckLabel(deck: deck),
+            child: DeckLabel(deck: deck),
           ),
-      ],
-    );
-  }
-}
-
-/// A deck's name with its archetype trailing it, quieter and smaller.
-///
-/// Two builds of the same deck are often called the same thing, and the list
-/// gives no other way to tell them apart. The archetype is left out when it
-/// repeats the name, which is the common case and reads as a stutter.
-class _DeckLabel extends StatelessWidget {
-  const _DeckLabel({required this.deck});
-
-  final Deck deck;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final archetype = deck.archetype.trim();
-    final repeats = archetype.toLowerCase() == deck.name.trim().toLowerCase();
-
-    return Row(
-      children: [
-        Flexible(child: Text(deck.name, overflow: TextOverflow.ellipsis)),
-        if (archetype.isNotEmpty && !repeats) ...[
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              archetype,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ],
       ],
     );
   }
