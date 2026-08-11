@@ -69,6 +69,13 @@ class _TournamentFormState extends ConsumerState<_TournamentForm> {
   late String _gameId;
   String? _formatId;
   String? _deckId;
+
+  /// Which archetype the deck dropdown is showing builds of.
+  ///
+  /// Derived from [_deckId] on every build rather than kept in step by hand,
+  /// and never saved: the tournament stores a deck, and the deck stores its
+  /// archetype.
+  String? _archetype;
   late DateTime _date;
 
   /// No default: which kind of event this was is the one thing about a
@@ -208,8 +215,31 @@ class _TournamentFormState extends ConsumerState<_TournamentForm> {
             .valueOrNull ??
         const <Deck>[];
 
-    if (!decks.any((d) => d.id == _deckId)) {
-      _deckId = decks.isEmpty ? null : decks.first.id;
+    // The deck is picked in two steps, archetype first, because a player with
+    // four builds of the same deck reads "Snake-Eye" long before they read
+    // which of the four it was.
+    //
+    // The archetype is not stored on the tournament — the deck already knows
+    // it — so it is read back off the chosen deck rather than remembered
+    // separately. That also means a tournament opened for editing lands on the
+    // right archetype without the editor having to be told.
+    final archetypes = {for (final deck in decks) deck.archetype}.toList()
+      ..sort();
+    final chosen = decks.where((deck) => deck.id == _deckId).firstOrNull;
+
+    if (chosen != null) {
+      _archetype = chosen.archetype;
+    } else if (!archetypes.contains(_archetype)) {
+      _archetype = archetypes.firstOrNull;
+    }
+
+    final builds = [
+      for (final deck in decks)
+        if (deck.archetype == _archetype) deck,
+    ];
+
+    if (!builds.any((deck) => deck.id == _deckId)) {
+      _deckId = builds.firstOrNull?.id;
     }
 
     return Scaffold(
@@ -289,19 +319,41 @@ class _TournamentFormState extends ConsumerState<_TournamentForm> {
               ),
               const SizedBox(height: 20),
             ],
-            SectionLabel(l10n.tournamentDeck),
-            const SizedBox(height: 8),
-            if (decks.isEmpty)
+            if (decks.isEmpty) ...[
+              SectionLabel(l10n.tournamentDeck),
+              const SizedBox(height: 8),
               EmptyState(
                 icon: Icons.style_outlined,
                 title: l10n.tournamentNeedsDeck,
                 message: l10n.tournamentNeedsDeckHint,
-              )
-            else
+              ),
+            ] else ...[
+              SectionLabel(l10n.deckArchetype),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                initialValue: _archetype,
+                isExpanded: true,
+                items: [
+                  for (final archetype in archetypes)
+                    DropdownMenuItem(
+                      value: archetype,
+                      child: Text(archetype, overflow: TextOverflow.ellipsis),
+                    ),
+                ],
+                onChanged: (value) => setState(() {
+                  _archetype = value;
+                  _deckId = null;
+                }),
+                validator: (value) => value == null ? l10n.fieldRequired : null,
+              ),
+              const SizedBox(height: 20),
+              SectionLabel(l10n.tournamentDeck),
+              const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 initialValue: _deckId,
+                isExpanded: true,
                 items: [
-                  for (final deck in decks)
+                  for (final deck in builds)
                     DropdownMenuItem(
                       value: deck.id,
                       child: Text(deck.name, overflow: TextOverflow.ellipsis),
@@ -310,6 +362,7 @@ class _TournamentFormState extends ConsumerState<_TournamentForm> {
                 onChanged: (value) => setState(() => _deckId = value),
                 validator: (value) => value == null ? l10n.fieldRequired : null,
               ),
+            ],
             const SizedBox(height: 20),
             SectionLabel(l10n.tournamentName),
             const SizedBox(height: 8),

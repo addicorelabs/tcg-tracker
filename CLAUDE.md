@@ -156,6 +156,11 @@ curl -L -o web/sqlite3.wasm    https://github.com/simolus3/sqlite3.dart/releases
 - I match di **top cut** contano nelle statistiche come i round svizzeri. Non si chiede
   all'utente se un round è di top cut: si deduce da `hasTopCut` e dal numero di round
   oltre i round svizzeri previsti
+- Il **mazzo di un torneo si sceglie in due passi**, prima l'archetipo e poi la
+  build: chi ha quattro versioni dello stesso mazzo legge "Snake-Eye" molto
+  prima di leggere quale delle quattro. L'archetipo non è un campo del torneo —
+  lo sa già il mazzo — quindi si ricava dal mazzo scelto a ogni build, e un
+  torneo riaperto in modifica atterra da solo sull'archetipo giusto
 - Il **tipo di evento** è obbligatorio alla creazione di un torneo e non ha default: è
   l'unica cosa di un torneo che non si può dedurre da nient'altro
 - I **tipi di evento e le dimensioni del top cut dipendono dal gioco** e vivono solo in

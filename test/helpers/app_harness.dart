@@ -6,6 +6,7 @@ import 'package:tcg_tracker/app/app.dart';
 import 'package:tcg_tracker/data/db/app_database.dart';
 import 'package:tcg_tracker/data/db/database_provider.dart';
 import 'package:tcg_tracker/features/settings/providers/app_settings_provider.dart';
+import 'package:tcg_tracker/shared/layout/floating_bar_inset.dart';
 
 import 'test_database.dart';
 
@@ -58,4 +59,31 @@ const desktopSize = Size(1200, 800);
 Future<void> unmount(WidgetTester tester) async {
   await tester.pumpWidget(const SizedBox.shrink());
   await tester.pump(const Duration(seconds: 5));
+}
+
+/// Taps something that may be sitting under the floating navigation bar.
+///
+/// The bar is drawn over the body, so a widget can be well inside the viewport
+/// and still be covered: `ensureVisible` is satisfied by the first condition
+/// and blind to the second, and `tap` then lands on the bar instead. This
+/// scrolls the last [FloatingBar.inset] pixels out of the way as well.
+///
+/// Use it for anything low on a scrolling screen. A plain `tap` that has worked
+/// for months will start missing the moment a field is added above the target.
+Future<void> tapClearOfNavBar(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
+  await tester.pumpAndSettle();
+
+  final view = tester.view;
+  final screenBottom = view.physicalSize.height / view.devicePixelRatio;
+  final clearance = screenBottom - FloatingBar.inset - 8;
+  final bottom = tester.getBottomLeft(finder).dy;
+
+  if (bottom > clearance) {
+    await tester.drag(finder, Offset(0, clearance - bottom));
+    await tester.pumpAndSettle();
+  }
+
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
 }

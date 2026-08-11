@@ -25,12 +25,13 @@ void main() {
     String gameId = Seed.yugiohId,
     String formatId = 'ygo-advanced',
     String name = 'Snake-Eye',
+    String? archetype,
   }) async {
     await DeckRepository(harness.database).createDeck(
       gameId: gameId,
       formatId: formatId,
       name: name,
-      archetype: name,
+      archetype: archetype ?? name,
     );
   }
 
@@ -61,8 +62,7 @@ void main() {
     await tester.tap(find.text('New tournament'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField).at(0), name);
-    await tester.tap(find.widgetWithText(ChoiceChip, eventType));
-    await tester.pumpAndSettle();
+    await tapClearOfNavBar(tester, find.widgetWithText(ChoiceChip, eventType));
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
   }
@@ -257,6 +257,49 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets('the deck is chosen archetype first, then build', (tester) async {
+    await createDeck(name: 'Snake-Eye Fire King', archetype: 'Snake-Eye');
+    await createDeck(name: 'Snake-Eye Bystial', archetype: 'Snake-Eye');
+    await createDeck(name: 'Yubel Unchained', archetype: 'Yubel');
+
+    await openTournamentsTab(tester);
+    await tester.tap(find.text('New tournament'));
+    await tester.pumpAndSettle();
+
+    // Format, then archetype, then the build within it.
+    final fields = find.byType(DropdownButtonFormField<String>);
+
+    await tester.tap(fields.at(2));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Snake-Eye Fire King'), findsWidgets);
+    expect(
+      find.text('Yubel Unchained'),
+      findsNothing,
+      reason: 'the deck menu is limited to builds of the chosen archetype',
+    );
+
+    await tester.tap(find.text('Snake-Eye Fire King').last);
+    await tester.pumpAndSettle();
+
+    await tester.tap(fields.at(1));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Yubel').last);
+    await tester.pumpAndSettle();
+
+    await tester.tap(fields.at(2));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Yubel Unchained'),
+      findsWidgets,
+      reason: 'changing archetype changes what the deck menu offers',
+    );
+    expect(find.text('Snake-Eye Fire King'), findsNothing);
+
+    await unmount(tester);
+  });
+
   testWidgets('switching game drops an event type the new one does not run', (
     tester,
   ) async {
@@ -265,14 +308,29 @@ void main() {
 
     await tester.tap(find.text('New tournament'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(ChoiceChip, 'OTS'));
+    await tapClearOfNavBar(tester, find.widgetWithText(ChoiceChip, 'OTS'));
+
+    // Reaching the event types scrolled the game buttons off the top, and a
+    // form this long unmounts what it scrolls past. Back to the top rather than
+    // `dragUntilVisible`, which stops as soon as the target is mounted and
+    // leaves it behind the app bar, where a tap does not reach it.
+    await tester.drag(find.byType(ListView), const Offset(0, 600));
     await tester.pumpAndSettle();
+
     await tester.tap(find.text('Magic: The Gathering'));
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextFormField).at(0), 'Store event');
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
+
+    // The message sits at the field it belongs to, which is below the fold and
+    // therefore not in the tree until it is scrolled to.
+    await tester.dragUntilVisible(
+      find.text('Required'),
+      find.byType(ListView),
+      const Offset(0, -120),
+    );
 
     expect(
       find.text('Required'),
