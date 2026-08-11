@@ -142,6 +142,7 @@
   "eventTypeStoreChampionship": "Store Championship",
   "eventTypeShowdown": "Showdown",
   "eventTypePtq": "PTQ",
+  "eventTypeYcs": "YCS",
   "eventTypeContinental": "Continentale",
   "eventTypeWorlds": "Mondiale",
   "tournamentStatusPlanned": "Pianificato",

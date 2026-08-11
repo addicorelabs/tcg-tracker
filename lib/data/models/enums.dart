@@ -20,6 +20,7 @@ enum EventType {
   showdown,
   regional,
   ptq,
+  ycs,
   national,
   continental,
   worlds,

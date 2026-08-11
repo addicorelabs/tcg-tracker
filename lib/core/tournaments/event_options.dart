@@ -14,6 +14,7 @@ abstract final class EventOptions {
     EventType.online,
     EventType.ots,
     EventType.regional,
+    EventType.ycs,
     EventType.national,
     EventType.continental,
     EventType.worlds,

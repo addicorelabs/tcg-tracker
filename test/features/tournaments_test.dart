@@ -244,6 +244,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.widgetWithText(ChoiceChip, 'OTS'), findsOneWidget);
+    expect(find.widgetWithText(ChoiceChip, 'YCS'), findsOneWidget);
     expect(find.widgetWithText(ChoiceChip, 'Continental'), findsOneWidget);
     expect(find.widgetWithText(ChoiceChip, 'PTQ'), findsNothing);
 
@@ -253,6 +254,7 @@ void main() {
     expect(find.widgetWithText(ChoiceChip, 'PTQ'), findsOneWidget);
     expect(find.widgetWithText(ChoiceChip, 'Showdown'), findsOneWidget);
     expect(find.widgetWithText(ChoiceChip, 'OTS'), findsNothing);
+    expect(find.widgetWithText(ChoiceChip, 'YCS'), findsNothing);
 
     await unmount(tester);
   });

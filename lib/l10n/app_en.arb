@@ -560,6 +560,10 @@
   "@eventTypePtq": {
     "description": "Magic Pro Tour Qualifier"
   },
+  "eventTypeYcs": "YCS",
+  "@eventTypeYcs": {
+    "description": "Yu-Gi-Oh! Championship Series"
+  },
   "eventTypeContinental": "Continental",
   "@eventTypeContinental": {
     "description": "A continent-wide championship"

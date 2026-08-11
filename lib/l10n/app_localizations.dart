@@ -848,6 +848,12 @@ abstract class AppLocalizations {
   /// **'PTQ'**
   String get eventTypePtq;
 
+  /// Yu-Gi-Oh! Championship Series
+  ///
+  /// In en, this message translates to:
+  /// **'YCS'**
+  String get eventTypeYcs;
+
   /// A continent-wide championship
   ///
   /// In en, this message translates to:

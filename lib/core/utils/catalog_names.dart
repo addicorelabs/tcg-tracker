@@ -32,6 +32,7 @@ extension CatalogNames on AppLocalizations {
       EventType.showdown => eventTypeShowdown,
       EventType.regional => eventTypeRegional,
       EventType.ptq => eventTypePtq,
+      EventType.ycs => eventTypeYcs,
       EventType.national => eventTypeNational,
       EventType.continental => eventTypeContinental,
       EventType.worlds => eventTypeWorlds,

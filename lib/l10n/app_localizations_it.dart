@@ -443,6 +443,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get eventTypePtq => 'PTQ';
 
   @override
+  String get eventTypeYcs => 'YCS';
+
+  @override
   String get eventTypeContinental => 'Continentale';
 
   @override
