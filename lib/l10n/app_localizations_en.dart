@@ -942,6 +942,35 @@ class AppLocalizationsEn extends AppLocalizations {
       'What actually turned up across the table, not what the internet plays.';
 
   @override
+  String get analyticsReset => 'Clear this history';
+
+  @override
+  String get analyticsResetHint =>
+      'Deletes the tournaments of the game and format shown above. Decks and archetypes stay.';
+
+  @override
+  String analyticsResetConfirm(int tournaments, int matches, String format) {
+    String _temp0 = intl.Intl.pluralLogic(
+      tournaments,
+      locale: localeName,
+      other: '$tournaments tournaments',
+      one: '1 tournament',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      matches,
+      locale: localeName,
+      other: '$matches matches',
+      one: '1 match',
+    );
+    return '$_temp0 and $_temp1 in $format will be deleted for good. There is no undo: export a backup from Settings first if you want to keep them.';
+  }
+
+  @override
+  String analyticsResetDone(String format) {
+    return '$format history cleared';
+  }
+
+  @override
   String analyticsFaced(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

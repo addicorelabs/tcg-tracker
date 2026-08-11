@@ -1706,6 +1706,30 @@ abstract class AppLocalizations {
   /// **'What actually turned up across the table, not what the internet plays.'**
   String get analyticsMetaHint;
 
+  /// Button that deletes the recorded results the analytics are computed from
+  ///
+  /// In en, this message translates to:
+  /// **'Clear this history'**
+  String get analyticsReset;
+
+  /// What the clear button covers, shown under it
+  ///
+  /// In en, this message translates to:
+  /// **'Deletes the tournaments of the game and format shown above. Decks and archetypes stay.'**
+  String get analyticsResetHint;
+
+  /// Confirmation before clearing, quoting exactly what goes
+  ///
+  /// In en, this message translates to:
+  /// **'{tournaments, plural, =1{1 tournament} other{{tournaments} tournaments}} and {matches, plural, =1{1 match} other{{matches} matches}} in {format} will be deleted for good. There is no undo: export a backup from Settings first if you want to keep them.'**
+  String analyticsResetConfirm(int tournaments, int matches, String format);
+
+  /// Confirmation after clearing
+  ///
+  /// In en, this message translates to:
+  /// **'{format} history cleared'**
+  String analyticsResetDone(String format);
+
   /// How often an opponent archetype was played against
   ///
   /// In en, this message translates to:

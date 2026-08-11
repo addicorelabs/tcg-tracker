@@ -206,6 +206,57 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets('clearing the history empties the section but keeps the deck', (
+    tester,
+  ) async {
+    await recordSeason(
+      rounds: [
+        (result: MatchResult.win, opponent: 'Fire King', onThePlay: true),
+        (result: MatchResult.loss, opponent: 'Branded', onThePlay: false),
+      ],
+    );
+
+    await openAnalytics(tester);
+
+    // Not `scrollUntilVisible`: the matchup grid scrolls sideways, so the
+    // screen has more than one scrollable and the default finder cannot choose.
+    final button = find.text('Clear this history');
+    await tester.ensureVisible(button);
+    await tester.pumpAndSettle();
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining('1 tournament and 2 matches'),
+      findsOneWidget,
+      reason: 'the confirmation counts what it is about to destroy',
+    );
+
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
+
+    expect(
+      // EmptyState draws its title in caps.
+      find.text('NOTHING TO ANALYSE YET'),
+      findsOneWidget,
+      reason:
+          'with the history gone the section is empty for the reason a fresh '
+          'install is, not because a filter is narrow',
+    );
+
+    final decks = await db.select(db.decks).get();
+    expect(
+      decks.map((deck) => deck.name),
+      contains('Snake-Eye Fire King'),
+      reason: 'a deck is a list the user wrote, not a result',
+    );
+
+    final tournaments = await db.select(db.tournaments).get();
+    expect(tournaments, isEmpty);
+
+    await unmount(tester);
+  });
+
   test('casual matches never reach the analytics', () async {
     final db = createTestDatabase();
     addTearDown(db.close);

@@ -941,6 +941,35 @@ class AppLocalizationsIt extends AppLocalizations {
       'Quello che si è visto davvero dall\'altra parte del tavolo, non quello che gioca internet.';
 
   @override
+  String get analyticsReset => 'Azzera questo storico';
+
+  @override
+  String get analyticsResetHint =>
+      'Cancella i tornei del gioco e del formato qui sopra. Mazzi e archetipi restano.';
+
+  @override
+  String analyticsResetConfirm(int tournaments, int matches, String format) {
+    String _temp0 = intl.Intl.pluralLogic(
+      tournaments,
+      locale: localeName,
+      other: '$tournaments tornei',
+      one: '1 torneo',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      matches,
+      locale: localeName,
+      other: '$matches partite',
+      one: '1 partita',
+    );
+    return '$_temp0 e $_temp1 di $format verranno cancellati per sempre. Non si torna indietro: se vuoi conservarli, esporta prima un backup dalle impostazioni.';
+  }
+
+  @override
+  String analyticsResetDone(String format) {
+    return 'Storico di $format cancellato';
+  }
+
+  @override
   String analyticsFaced(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

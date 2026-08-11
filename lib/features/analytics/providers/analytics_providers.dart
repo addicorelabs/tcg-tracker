@@ -228,6 +228,23 @@ final analyticsMetaProvider = Provider<List<ArchetypeShare>>(
   (ref) => Analytics.meta(_matches(ref)),
 );
 
+/// How much history the shown game and format hold, other filters ignored.
+///
+/// What clearing would destroy, which is not what the section is drawing: the
+/// period filter alone hides most of it most of the time.
+final analyticsHistorySizeProvider = StreamProvider<HistorySize>((ref) {
+  final gameId = ref.watch(analyticsGameProvider);
+  final formatId = ref.watch(analyticsFormatProvider);
+
+  if (gameId == null || formatId == null) {
+    return Stream.value((tournaments: 0, matches: 0));
+  }
+
+  return ref
+      .watch(analyticsRepositoryProvider)
+      .watchHistorySize(gameId: gameId, formatId: formatId);
+});
+
 /// Whether any tournament round has ever been recorded, filters ignored.
 ///
 /// It exists so the empty state can tell two situations apart that look

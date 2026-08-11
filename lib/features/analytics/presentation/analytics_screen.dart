@@ -5,6 +5,7 @@ import '../../../core/stats/analytics.dart';
 import '../../../core/utils/catalog_names.dart';
 import '../../../core/utils/formatting.dart';
 import '../../../data/db/app_database.dart';
+import '../../../data/repositories/analytics_repository.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/layout/floating_bar_inset.dart';
@@ -41,6 +42,7 @@ class AnalyticsScreen extends ConsumerWidget {
             AsyncError() => Text(l10n.errorGeneric),
             _ => const SizedBox(height: 200),
           },
+          const _ClearHistory(),
         ],
       ),
     );
@@ -295,6 +297,115 @@ class _MetaRow extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Throws away the recorded results the section is computing from.
+///
+/// Scoped to the game and format on screen, and absent while there is nothing
+/// to clear: an enabled button that would delete nothing invites the tap that
+/// finds out what it does.
+///
+/// The confirmation counts the whole history of that format, not the rows the
+/// filters are showing. The period alone hides most of it most of the time, and
+/// a warning that understates the damage is worse than none.
+class _ClearHistory extends ConsumerWidget {
+  const _ClearHistory();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+
+    final formatId = ref.watch(analyticsFormatProvider);
+    final size = ref.watch(analyticsHistorySizeProvider).valueOrNull;
+
+    if (formatId == null || size == null || size.tournaments == 0) {
+      return const SizedBox.shrink();
+    }
+
+    final formats =
+        ref
+            .watch(allFormatsProvider(ref.watch(analyticsGameProvider) ?? ''))
+            .valueOrNull ??
+        const <Format>[];
+    final format = formats.where((f) => f.id == formatId).firstOrNull;
+    final formatLabel = format == null
+        ? formatId
+        : l10n.formatName(format.id, format.name);
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          OutlinedButton.icon(
+            onPressed: () => _confirm(context, ref, size, formatLabel),
+            icon: const Icon(Icons.delete_outline),
+            label: Text(l10n.analyticsReset),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: theme.colorScheme.error,
+              side: BorderSide(color: theme.colorScheme.error),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.analyticsResetHint,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _confirm(
+    BuildContext context,
+    WidgetRef ref,
+    HistorySize size,
+    String formatLabel,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final gameId = ref.read(analyticsGameProvider);
+    final formatId = ref.read(analyticsFormatProvider);
+    if (gameId == null || formatId == null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.analyticsReset),
+        content: Text(
+          l10n.analyticsResetConfirm(
+            size.tournaments,
+            size.matches,
+            formatLabel,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.actionCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.actionDelete),
+          ),
+        ],
+      ),
+    );
+
+    if (!(confirmed ?? false)) return;
+
+    await ref
+        .read(analyticsRepositoryProvider)
+        .clearHistory(gameId: gameId, formatId: formatId);
+
+    messenger.showSnackBar(
+      SnackBar(content: Text(l10n.analyticsResetDone(formatLabel))),
     );
   }
 }

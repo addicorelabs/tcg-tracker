@@ -289,6 +289,10 @@
   "analyticsTrendHint": "Winrate match mese per mese.",
   "analyticsMeta": "Meta locale",
   "analyticsMetaHint": "Quello che si è visto davvero dall'altra parte del tavolo, non quello che gioca internet.",
+  "analyticsReset": "Azzera questo storico",
+  "analyticsResetHint": "Cancella i tornei del gioco e del formato qui sopra. Mazzi e archetipi restano.",
+  "analyticsResetConfirm": "{tournaments, plural, =1{1 torneo} other{{tournaments} tornei}} e {matches, plural, =1{1 partita} other{{matches} partite}} di {format} verranno cancellati per sempre. Non si torna indietro: se vuoi conservarli, esporta prima un backup dalle impostazioni.",
+  "analyticsResetDone": "Storico di {format} cancellato",
   "analyticsFaced": "{count, plural, =1{incontrato una volta} other{incontrato {count} volte}}",
   "analyticsThinSample": "Troppe poche partite per farci conto"
 }

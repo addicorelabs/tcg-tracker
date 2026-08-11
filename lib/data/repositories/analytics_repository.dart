@@ -95,7 +95,80 @@ class AnalyticsRepository {
       ],
     );
   }
+
+  /// How much history one game and format hold, whatever the other filters say.
+  ///
+  /// Deliberately not derived from the filtered query the section draws: this
+  /// is what clearing would destroy, and the period filter routinely hides most
+  /// of it. A confirmation quoting the visible figures would understate what it
+  /// is about to do.
+  Stream<HistorySize> watchHistorySize({
+    required String gameId,
+    required String formatId,
+  }) {
+    // One query rather than two streams zipped together: the two numbers are
+    // read out to the user in the same sentence, and two streams can deliver a
+    // frame where one has updated and the other has not.
+    return _db
+        .customSelect(
+          'SELECT '
+          '(SELECT COUNT(*) FROM tournaments '
+          'WHERE game_id = ? AND format_id = ?) AS tournaments, '
+          '(SELECT COUNT(*) FROM matches '
+          'WHERE game_id = ? AND format_id = ?) AS matches',
+          variables: [
+            Variable<String>(gameId),
+            Variable<String>(formatId),
+            Variable<String>(gameId),
+            Variable<String>(formatId),
+          ],
+          readsFrom: {_db.tournaments, _db.matches},
+        )
+        .watchSingle()
+        .map(
+          (row) => (
+            tournaments: row.read<int>('tournaments'),
+            matches: row.read<int>('matches'),
+          ),
+        );
+  }
+
+  /// Deletes every tournament and match of one game and format.
+  ///
+  /// Scoped rather than wholesale because the section always shows one game and
+  /// one format, and a button clears what is on screen — clearing Magic while
+  /// looking at Yu-Gi-Oh! would be a trap.
+  ///
+  /// Decks and archetypes survive: they are lists the user wrote, not results.
+  /// Their `timesFaced` counters do not, because they count matches that are
+  /// about to stop existing, and a counter left behind would keep ordering the
+  /// opponent menu by a history nobody can see any more.
+  Future<void> clearHistory({
+    required String gameId,
+    required String formatId,
+  }) {
+    return _db.transaction(() async {
+      // Matches first: they point at the tournaments.
+      await (_db.delete(_db.matches)..where(
+            (row) => row.gameId.equals(gameId) & row.formatId.equals(formatId),
+          ))
+          .go();
+
+      await (_db.delete(_db.tournaments)..where(
+            (row) => row.gameId.equals(gameId) & row.formatId.equals(formatId),
+          ))
+          .go();
+
+      await (_db.update(_db.opponentArchetypes)..where(
+            (row) => row.gameId.equals(gameId) & row.formatId.equals(formatId),
+          ))
+          .write(const OpponentArchetypesCompanion(timesFaced: Value(0)));
+    });
+  }
 }
+
+/// How many rows a clear would take with it.
+typedef HistorySize = ({int tournaments, int matches});
 
 final analyticsRepositoryProvider = Provider<AnalyticsRepository>((ref) {
   return AnalyticsRepository(ref.watch(appDatabaseProvider));

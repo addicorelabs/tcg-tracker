@@ -179,6 +179,14 @@ curl -L -o web/sqlite3.wasm    https://github.com/simolus3/sqlite3.dart/releases
   sezione nasce dalla stessa singola query: due numeri sullo schermo non devono mai poter
   venire da insiemi di dati diversi
 - Il record di un torneo non è un campo salvato: si calcola sempre dai match
+- **"Azzera questo storico"** nelle analisi cancella tornei e partite del solo
+  gioco e formato mostrati: la sezione parla sempre di uno solo, e un pulsante
+  cancella quello che si ha davanti. Mazzi e archetipi restano — sono liste
+  scritte dall'utente, non risultati — ma il `times_faced` degli archetipi torna
+  a zero, perché conta partite che stanno per sparire. La conferma cita tutto lo
+  storico del formato, non le righe che i filtri mostrano: il filtro del periodo
+  ne nasconde quasi sempre la maggior parte, e un avviso che sottostima il danno
+  è peggio di nessun avviso
 
 ## Sync
 

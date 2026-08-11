@@ -1209,6 +1209,38 @@
   "@analyticsMetaHint": {
     "description": "What the meta block means"
   },
+  "analyticsReset": "Clear this history",
+  "@analyticsReset": {
+    "description": "Button that deletes the recorded results the analytics are computed from"
+  },
+  "analyticsResetHint": "Deletes the tournaments of the game and format shown above. Decks and archetypes stay.",
+  "@analyticsResetHint": {
+    "description": "What the clear button covers, shown under it"
+  },
+  "analyticsResetConfirm": "{tournaments, plural, =1{1 tournament} other{{tournaments} tournaments}} and {matches, plural, =1{1 match} other{{matches} matches}} in {format} will be deleted for good. There is no undo: export a backup from Settings first if you want to keep them.",
+  "@analyticsResetConfirm": {
+    "description": "Confirmation before clearing, quoting exactly what goes",
+    "placeholders": {
+      "tournaments": {
+        "type": "int"
+      },
+      "matches": {
+        "type": "int"
+      },
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "analyticsResetDone": "{format} history cleared",
+  "@analyticsResetDone": {
+    "description": "Confirmation after clearing",
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
   "analyticsFaced": "{count, plural, =1{faced once} other{faced {count} times}}",
   "@analyticsFaced": {
     "description": "How often an opponent archetype was played against",
