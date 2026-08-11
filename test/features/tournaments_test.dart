@@ -378,6 +378,11 @@ void main() {
     await recordRound(tester, won: 1, lost: 1);
 
     expect(
+      find.text('Drawn'),
+      findsNothing,
+      reason: 'a game with no draws has no use for the row',
+    );
+    expect(
       find.textContaining('cannot end level'),
       findsOneWidget,
       reason: 'the result follows from the games, so a level score is refused',

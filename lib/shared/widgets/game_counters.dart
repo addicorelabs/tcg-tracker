@@ -15,6 +15,7 @@ class GameCounters extends StatelessWidget {
     required this.lost,
     required this.drawn,
     required this.onChanged,
+    this.showDrawn = true,
     super.key,
   });
 
@@ -22,6 +23,14 @@ class GameCounters extends StatelessWidget {
   final int lost;
   final int drawn;
   final void Function(int won, int lost, int drawn) onChanged;
+
+  /// Whether the drawn-games row is offered.
+  ///
+  /// Off for a game whose matches cannot end level. [drawn] is still reported
+  /// back unchanged rather than forced to zero: a match recorded before the
+  /// rule existed keeps its count, and hiding a field is not a reason to
+  /// rewrite what it held.
+  final bool showDrawn;
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +49,14 @@ class GameCounters extends StatelessWidget {
           value: lost,
           onChanged: (value) => onChanged(won, value, drawn),
         ),
-        const SizedBox(height: 8),
-        _CounterRow(
-          label: l10n.matchGamesDrawn,
-          value: drawn,
-          onChanged: (value) => onChanged(won, lost, value),
-        ),
+        if (showDrawn) ...[
+          const SizedBox(height: 8),
+          _CounterRow(
+            label: l10n.matchGamesDrawn,
+            value: drawn,
+            onChanged: (value) => onChanged(won, lost, value),
+          ),
+        ],
       ],
     );
   }

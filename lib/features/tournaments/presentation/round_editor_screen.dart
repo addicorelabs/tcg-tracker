@@ -334,6 +334,8 @@ class _RoundFormState extends ConsumerState<_RoundForm> {
               won: _won,
               lost: _lost,
               drawn: _drawn,
+              // A game whose matches cannot end level has no use for the row.
+              showDrawn: EventOptions.allowsDraw(widget.tournament.gameId),
               onChanged: (won, lost, drawn) => setState(() {
                 _won = won;
                 _lost = lost;
