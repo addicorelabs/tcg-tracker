@@ -167,6 +167,20 @@ curl -L -o web/sqlite3.wasm    https://github.com/simolus3/sqlite3.dart/releases
   l'ultima riga della lista
 - La barra del titolo **sfoca ciò che le passa sotto**. Non è decorazione: un
   titolo steso su carte e numeri in movimento diventa illeggibile
+- **La striscia della status bar è dipinta dalla pagina, non dall'app**, e prende
+  il colore della schermata in cima: `PageTint` (`shared/layout/page_tint.dart`,
+  montato nel `builder` di `MaterialApp`) segue il router e chiama
+  `setPageTint`, che scrive il `background` di `<body>` — viola dell'hero sulla
+  Home, `scaffoldBackgroundColor` altrove. È guidato dal router e non dalle
+  singole schermate perché l'`initState` della prossima gira prima del `dispose`
+  della precedente, e le due si darebbero battaglia.
+
+  **Non provare di nuovo a far salire l'app sotto la status bar.** È stato fatto
+  (`black-translucent` + `viewport-fit=cover` iniettato nel meta di Flutter +
+  inset misurato con `env(safe-area-inset-top)`): esteticamente funziona, ma i
+  tap finiscono circa una status bar più in basso del punto disegnato, in tutta
+  l'app — motore e pagina non concordano su dove sia la cima della view, e
+  forzare il re-measure con un `resize` non basta. Revertito in `ea2800a`
 - Dove l'intestazione è fissa e non scorre (Tornei, Mazzi, Archetipi) i filtri
   vengono spinti sotto la barra con uno spazio alto `TopBar.inset`, e scorre
   solo la lista sotto di loro

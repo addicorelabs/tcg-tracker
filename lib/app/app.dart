@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/sync/sync_controller.dart';
 import '../features/settings/providers/app_settings_provider.dart';
 import '../l10n/app_localizations.dart';
+import '../shared/layout/page_tint.dart';
 import 'router.dart';
 import 'theme.dart';
 
@@ -27,6 +28,9 @@ class TcgTrackerApp extends ConsumerWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: settings.themeMode,
+
+      // Inside the builder, so it can read the theme that is in force.
+      builder: (context, child) => PageTint(router: router, child: child!),
 
       // Null keeps the device language, with English as the fallback declared
       // by localizationsDelegates.

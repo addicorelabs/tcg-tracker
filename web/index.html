@@ -53,7 +53,11 @@
        <body>, not with theme-color and not with the meta tag above: an unstyled
        body leaves a white band above the app. Flutter paints its own canvas over
        this, so the colour only ever shows where the app itself does not reach —
-       the status bar, the home indicator, and the overscroll rubber band. -->
+       the status bar, the home indicator, and the overscroll rubber band.
+
+       This is only the colour the app starts on. From the first frame the app
+       sets it per screen, through setPageTint below, so the strip matches
+       whatever is drawn beneath it instead of reading as a band of its own. -->
   <style>
     html, body {
       margin: 0;
@@ -61,6 +65,12 @@
       background-color: #101017;
     }
   </style>
+
+  <script>
+    window.setPageTint = function (css) {
+      document.body.style.backgroundColor = css;
+    };
+  </script>
 </head>
 <body>
   <!--
