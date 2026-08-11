@@ -860,9 +860,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Nessuna partita con questi filtri';
 
   @override
-  String get analyticsAllGames => 'Tutti e due i giochi';
-
-  @override
   String get analyticsAllDecks => 'Tutti i mazzi';
 
   @override

@@ -6,6 +6,7 @@ import '../../../core/stats/analytics.dart';
 import '../../../core/stats/match_stats.dart';
 import '../../../data/db/app_database.dart';
 import '../../../data/repositories/analytics_repository.dart';
+import '../../../data/repositories/catalog_repository.dart';
 import '../../../data/repositories/deck_repository.dart';
 import '../../settings/providers/app_settings_provider.dart';
 
@@ -26,11 +27,17 @@ enum AnalyticsPeriod {
   }
 }
 
-/// The filters the analytics section is showing, all of them optional.
+/// The filters the analytics section is showing.
 ///
-/// A null [gameId] means both games. That is a deliberate default even though
-/// every other screen starts on one game: the first question this section
-/// answers is "how am I doing", and narrowing it is the second.
+/// [gameId] and [formatId] are what the user last *picked*, which is not
+/// necessarily what the section is reporting on: nothing is picked before the
+/// first visit, and a game or a format can be hidden after being picked. What
+/// the section actually reports on comes from [analyticsGameProvider] and
+/// [analyticsFormatProvider], and is never null while a game exists.
+///
+/// The two are kept apart so that hiding a format and unhiding it again returns
+/// the section to where the user left it, rather than to the first entry in the
+/// list.
 @immutable
 class AnalyticsSelection {
   const AnalyticsSelection({
@@ -44,13 +51,6 @@ class AnalyticsSelection {
   final String? formatId;
   final String? deckId;
   final AnalyticsPeriod period;
-
-  AnalyticsFilter filterAt(DateTime now) => AnalyticsFilter(
-    gameId: gameId,
-    formatId: formatId,
-    deckId: deckId,
-    since: period.since(now),
-  );
 
   AnalyticsSelection copyWith({
     String? gameId,
@@ -100,17 +100,13 @@ class AnalyticsSelectionNotifier extends Notifier<AnalyticsSelection> {
   }
 
   /// Changing game drops the format and the deck: both belonged to the old one.
-  void selectGame(String? gameId) {
-    state = gameId == null
-        ? state.copyWith(clearGame: true, clearFormat: true, clearDeck: true)
-        : state.copyWith(gameId: gameId, clearFormat: true, clearDeck: true);
+  void selectGame(String gameId) {
+    state = state.copyWith(gameId: gameId, clearFormat: true, clearDeck: true);
     _save();
   }
 
-  void selectFormat(String? formatId) {
-    state = formatId == null
-        ? state.copyWith(clearFormat: true, clearDeck: true)
-        : state.copyWith(formatId: formatId, clearDeck: true);
+  void selectFormat(String formatId) {
+    state = state.copyWith(formatId: formatId, clearDeck: true);
     _save();
   }
 
@@ -147,6 +143,41 @@ final analyticsSelectionProvider =
       AnalyticsSelectionNotifier.new,
     );
 
+/// The game the section is reporting on.
+///
+/// The filters offer no "both games", so one is always in force — including
+/// before the user has chosen anything, and after the chosen game has been
+/// hidden. Falls back to the first visible game without writing that fallback
+/// back to the saved selection, so unhiding the game returns the section to it.
+///
+/// Null only while there are no games at all, a state the catalogue refuses to
+/// reach on purpose but which is still worth not crashing on.
+final analyticsGameProvider = Provider<String?>((ref) {
+  final saved = ref.watch(analyticsSelectionProvider).gameId;
+  final games = ref.watch(gamesProvider).valueOrNull ?? const <Game>[];
+
+  if (games.any((game) => game.id == saved)) return saved;
+  return games.firstOrNull?.id;
+});
+
+/// The format the section is reporting on, under [analyticsGameProvider].
+///
+/// Same rule as the game, one level down: a saved format that belongs to
+/// another game, or that has been hidden, gives way to the first format of the
+/// current game. Null while that game has no visible format, which is possible —
+/// unlike games, formats can all be hidden.
+final analyticsFormatProvider = Provider<String?>((ref) {
+  final gameId = ref.watch(analyticsGameProvider);
+  if (gameId == null) return null;
+
+  final saved = ref.watch(analyticsSelectionProvider).formatId;
+  final formats =
+      ref.watch(formatsProvider(gameId)).valueOrNull ?? const <Format>[];
+
+  if (formats.any((format) => format.id == saved)) return saved;
+  return formats.firstOrNull?.id;
+});
+
 /// Every match the current filters admit, with its archetypes attached.
 ///
 /// The one query the whole section reads: each figure below is a fold over
@@ -156,7 +187,14 @@ final analyticsMatchesProvider = StreamProvider<List<AnalyzedMatch>>((ref) {
 
   return ref
       .watch(analyticsRepositoryProvider)
-      .watchMatches(selection.filterAt(DateTime.now()));
+      .watchMatches(
+        AnalyticsFilter(
+          gameId: ref.watch(analyticsGameProvider),
+          formatId: ref.watch(analyticsFormatProvider),
+          deckId: selection.deckId,
+          since: selection.period.since(DateTime.now()),
+        ),
+      );
 });
 
 List<AnalyzedMatch> _matches(Ref ref) =>
@@ -209,13 +247,11 @@ final analyticsHasAnyMatchProvider = StreamProvider<bool>((ref) {
 /// An archived deck is still the deck that played last season's tournaments,
 /// and leaving it out would make that season impossible to look at.
 final analyticsDeckChoicesProvider = StreamProvider<List<Deck>>((ref) {
-  final selection = ref.watch(analyticsSelectionProvider);
-
   return ref
       .watch(deckRepositoryProvider)
       .watchDecks(
-        gameId: selection.gameId,
-        formatId: selection.formatId,
+        gameId: ref.watch(analyticsGameProvider),
+        formatId: ref.watch(analyticsFormatProvider),
         includeArchived: true,
       );
 });

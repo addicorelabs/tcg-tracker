@@ -150,6 +150,41 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets('one game and one format are always in force', (tester) async {
+    await recordSeason(
+      rounds: [
+        (result: MatchResult.win, opponent: 'Fire King', onThePlay: true),
+        (result: MatchResult.win, opponent: 'Branded', onThePlay: false),
+        (result: MatchResult.loss, opponent: 'Branded', onThePlay: false),
+      ],
+    );
+
+    await openAnalytics(tester);
+
+    expect(
+      find.text('Both games'),
+      findsNothing,
+      reason: 'the section reports on one game, and offers no way out of that',
+    );
+    expect(find.text('All'), findsNothing, reason: 'nor out of one format');
+
+    expect(
+      find.text('3 matches'),
+      findsWidgets,
+      reason:
+          'with nothing ever picked, the section opens on the first game and '
+          'its first format, which is where the season was played',
+    );
+
+    // Same game, the other format: the season is not in it.
+    await tester.tap(find.text('Edison'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('NO MATCHES MATCH THESE FILTERS'), findsOneWidget);
+
+    await unmount(tester);
+  });
+
   testWidgets('a filter that excludes everything says so', (tester) async {
     await recordSeason(
       rounds: [

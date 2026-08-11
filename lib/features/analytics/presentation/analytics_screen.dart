@@ -310,6 +310,12 @@ class _Filters extends ConsumerWidget {
     final notifier = ref.read(analyticsSelectionProvider.notifier);
     final games = ref.watch(gamesProvider).valueOrNull ?? const <Game>[];
 
+    // What the section reports on, which is not always what was last picked:
+    // see `analyticsGameProvider`. The chips have to show the former, or the
+    // numbers below would be answering a question nothing on screen asked.
+    final gameId = ref.watch(analyticsGameProvider);
+    final formatId = ref.watch(analyticsFormatProvider);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 12, 12, 14),
@@ -320,22 +326,17 @@ class _Filters extends ConsumerWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
-                ChoiceChip(
-                  label: Text(l10n.analyticsAllGames),
-                  selected: selection.gameId == null,
-                  onSelected: (_) => notifier.selectGame(null),
-                ),
                 for (final game in games)
                   ChoiceChip(
                     label: Text(l10n.gameName(game.id, game.name)),
-                    selected: selection.gameId == game.id,
+                    selected: gameId == game.id,
                     onSelected: (_) => notifier.selectGame(game.id),
                   ),
               ],
             ),
-            if (selection.gameId case final gameId?) ...[
+            if (gameId != null) ...[
               const SizedBox(height: 10),
-              _FormatChips(gameId: gameId, selected: selection.formatId),
+              _FormatChips(gameId: gameId, selected: formatId),
             ],
             const SizedBox(height: 10),
             const _DeckPicker(),
@@ -385,11 +386,6 @@ class _FormatChips extends ConsumerWidget {
       spacing: 8,
       runSpacing: 8,
       children: [
-        ChoiceChip(
-          label: Text(l10n.filterAll),
-          selected: selected == null,
-          onSelected: (_) => notifier.selectFormat(null),
-        ),
         for (final format in formats)
           ChoiceChip(
             label: Text(l10n.formatName(format.id, format.name)),

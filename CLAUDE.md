@@ -238,6 +238,14 @@ In pratica, provider distinti e nessuna eccezione sparsa:
   lista, e lo salverebbe in un formato che nessuno ha scelto. Non esiste
   l'equivalente per i giochi, ed è voluto: il gioco di un record è fissato alla
   creazione e i due editor nascondono il selettore quando c'è qualcosa da modificare
+- `analyticsGameProvider` / `analyticsFormatProvider` — il gioco e il formato su
+  cui le analisi stanno davvero riferendo. La sezione **non** offre "tutti e due
+  i giochi" né "tutti i formati": un gioco e un formato sono sempre in
+  vigore, anche prima che l'utente scelga e anche se quello scelto è stato
+  nascosto dopo. Ripiegano sul primo visibile senza riscrivere la scelta
+  salvata, così riattivare la voce riporta la sezione dov'era. I chip devono
+  mostrare questi, non `AnalyticsSelection`, altrimenti i numeri risponderebbero
+  a una domanda che sullo schermo non è scritta
 - `deckGameProvider` — il gioco che la libreria mostra davvero. Il filtro ricorda un id
   e quel gioco può venire nascosto dopo: leggere il filtro direttamente lascerebbe la
   libreria su un gioco senza chip da cui spostarsi. Ripiega sul primo gioco visibile e

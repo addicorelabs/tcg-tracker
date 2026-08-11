@@ -1574,12 +1574,6 @@ abstract class AppLocalizations {
   /// **'No matches match these filters'**
   String get analyticsNoMatchesForFilters;
 
-  /// Filter option covering Yu-Gi-Oh! and Magic together
-  ///
-  /// In en, this message translates to:
-  /// **'Both games'**
-  String get analyticsAllGames;
-
   /// Filter option covering all decks
   ///
   /// In en, this message translates to:

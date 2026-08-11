@@ -861,9 +861,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get analyticsNoMatchesForFilters => 'No matches match these filters';
 
   @override
-  String get analyticsAllGames => 'Both games';
-
-  @override
   String get analyticsAllDecks => 'Every deck';
 
   @override

@@ -1106,10 +1106,6 @@
   "@analyticsNoMatchesForFilters": {
     "description": "Shown when data exists but the current filters exclude all of it"
   },
-  "analyticsAllGames": "Both games",
-  "@analyticsAllGames": {
-    "description": "Filter option covering Yu-Gi-Oh! and Magic together"
-  },
   "analyticsAllDecks": "Every deck",
   "@analyticsAllDecks": {
     "description": "Filter option covering all decks"
