@@ -206,6 +206,43 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets('the deck menu names the archetype behind each build', (
+    tester,
+  ) async {
+    await recordSeason(
+      rounds: [
+        (result: MatchResult.win, opponent: 'Fire King', onThePlay: true),
+      ],
+      deckName: 'Prova',
+      archetype: 'Snake-Eye',
+    );
+
+    // Same name, different deck: without the archetype the menu would offer
+    // two entries nothing on screen could tell apart.
+    await DeckRepository(db).createDeck(
+      gameId: Seed.yugiohId,
+      formatId: 'ygo-advanced',
+      name: 'Prova',
+      archetype: 'Yubel',
+    );
+
+    await openAnalytics(tester);
+
+    expect(
+      find.text('Yubel'),
+      findsNothing,
+      reason: 'that deck has played nothing, so it appears nowhere else',
+    );
+
+    await tester.tap(find.byType(DropdownButtonFormField<String?>));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Yubel'), findsOneWidget);
+    expect(find.text('Prova'), findsWidgets);
+
+    await unmount(tester);
+  });
+
   testWidgets('clearing the history empties the section but keeps the deck', (
     tester,
   ) async {
