@@ -478,7 +478,10 @@ class _Toolbar extends ConsumerWidget {
     final sides = await showModalBottomSheet<int>(
       context: context,
       showDragHandle: true,
+      // `top: false`: a sheet comes up from the bottom and never reaches the
+      // status bar, so the inset above would only be a gap under the handle.
       builder: (context) => SafeArea(
+        top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
           child: Column(
@@ -569,6 +572,7 @@ class _TimerButton extends ConsumerWidget {
       context: context,
       showDragHandle: true,
       builder: (context) => SafeArea(
+        top: false,
         child: Consumer(
           builder: (context, ref, _) {
             final timer = ref.watch(roundTimerProvider);
@@ -647,6 +651,7 @@ class _HistorySheet extends ConsumerWidget {
     final log = game?.log.reversed.toList() ?? const <LifeEvent>[];
 
     return SafeArea(
+      top: false,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         child: Column(

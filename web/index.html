@@ -32,10 +32,12 @@
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <!-- "black", not "black-translucent": translucent puts the page under the
-       status bar, and Flutter Web does not inset its own app bar for it, so the
-       title would sit behind the clock. -->
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <!-- "black-translucent" puts the page itself under the status bar, so the app
+       reaches the top of the screen instead of stopping below a solid band. The
+       clock and the battery are then drawn over the app, and Flutter Web reports
+       no inset to keep clear of them — see the probe at the end of <body>, which
+       measures it for the app to use. -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="TCG Tracker">
   <!-- The maskable icons, which are the full-bleed ones: iOS applies its own
        rounded mask to a home screen icon, and the corners the shaped icon
@@ -49,16 +51,28 @@
   <title>TCG Tracker</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- Installed on iOS, the status bar area is painted with the background of
-       <body>, not with theme-color and not with the meta tag above: an unstyled
-       body leaves a white band above the app. Flutter paints its own canvas over
-       this, so the colour only ever shows where the app itself does not reach —
-       the status bar, the home indicator, and the overscroll rubber band. -->
+  <!-- Installed on iOS, anywhere the app does not reach is painted with the
+       background of <body>, not with theme-color and not with the meta tags
+       above: an unstyled body leaves a white band there. With the status bar
+       translucent the app does reach the top, so what is left is the home
+       indicator and the overscroll rubber band. -->
   <style>
     html, body {
       margin: 0;
       padding: 0;
       background-color: #101017;
+    }
+
+    /* Nothing to see: an empty box whose top padding is the status bar inset,
+       so the app can read a number CSS knows and Flutter Web does not. */
+    #safe-area-probe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0;
+      padding-top: env(safe-area-inset-top);
+      pointer-events: none;
+      visibility: hidden;
     }
   </style>
 </head>
@@ -72,5 +86,18 @@
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
   <script src="flutter_bootstrap.js" async></script>
+
+  <!-- The app asks for this once, on its first frame. Read live rather than
+       computed here and stored: env(safe-area-inset-top) resolves to zero until
+       the viewport is declared viewport-fit=cover, and it is Flutter Web that
+       declares it, while the engine starts up. -->
+  <div id="safe-area-probe"></div>
+  <script>
+    window.statusBarInset = function () {
+      var probe = document.getElementById('safe-area-probe');
+      if (!probe) return 0;
+      return parseFloat(getComputedStyle(probe).paddingTop) || 0;
+    };
+  </script>
 </body>
 </html>

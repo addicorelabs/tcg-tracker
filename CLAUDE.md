@@ -167,6 +167,18 @@ curl -L -o web/sqlite3.wasm    https://github.com/simolus3/sqlite3.dart/releases
   l'ultima riga della lista
 - La barra del titolo **sfoca ciò che le passa sotto**. Non è decorazione: un
   titolo steso su carte e numeri in movimento diventa illeggibile
+- **L'app arriva sotto la status bar** (`apple-mobile-web-app-status-bar-style:
+  black-translucent`), quindi orologio e batteria sono disegnati sopra di lei.
+  Flutter Web non riporta nessun inset per una PWA installata, così la misura
+  arriva dalla pagina: un elemento sonda in `web/index.html` con `padding-top:
+  env(safe-area-inset-top)`, letto da `shared/layout/status_bar_inset.dart` —
+  una funzione JS e non un valore calcolato all'avvio, perché `env()` vale zero
+  finché il viewport non è `viewport-fit=cover`, e quel meta lo inietta Flutter
+  stesso. Il valore viene consegnato **una volta sola**, nel `builder` di
+  `MaterialApp` in `app/app.dart`: da lì in poi è un normale
+  `MediaQuery.padding.top`, e `Scaffold`, `AppBar` e `SafeArea` fanno il resto.
+  `TopBar.inset` lo somma a `kToolbarHeight`, ed è per questo che non è più
+  `const`
 - Dove l'intestazione è fissa e non scorre (Tornei, Mazzi, Archetipi) i filtri
   vengono spinti sotto la barra con uno spazio alto `TopBar.inset`, e scorre
   solo la lista sotto di loro

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'status_bar_inset.dart';
+
 /// The two bars the app draws over its content, and the room they need.
 ///
 /// Both ends of every screen work the same way: the bar is painted on top of
@@ -47,11 +49,12 @@ abstract final class FloatingBar {
 /// outside, from the context of the widget holding the `Scaffold`. The value
 /// that arrives there is the one from before the bar, which is zero.
 ///
-/// A constant is also exactly right here. The bar is the standard toolbar
-/// height, and installed to a home screen Flutter Web reports no status bar
-/// inset to add to it — the same reason the bottom is a constant too.
+/// The bar is the standard toolbar height, plus whatever the platform keeps for
+/// its status bar above it: installed to an iPhone home screen the app runs
+/// under the clock, and [statusBarInset] is the room the `Scaffold` gives the
+/// bar to stay clear of it. In a browser tab that term is zero.
 abstract final class TopBar {
-  static const inset = kToolbarHeight;
+  static double get inset => kToolbarHeight + statusBarInset;
 }
 
 extension BarPadding on EdgeInsets {
@@ -60,8 +63,7 @@ extension BarPadding on EdgeInsets {
       this + const EdgeInsets.only(bottom: FloatingBar.inset);
 
   /// This padding, with room for the app bar above it.
-  EdgeInsets get clearingAppBar =>
-      this + const EdgeInsets.only(top: TopBar.inset);
+  EdgeInsets get clearingAppBar => this + EdgeInsets.only(top: TopBar.inset);
 }
 
 /// Wraps a floating action button so it clears the floating navigation bar.

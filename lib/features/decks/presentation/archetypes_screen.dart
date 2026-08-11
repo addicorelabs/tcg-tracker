@@ -50,7 +50,7 @@ class _ArchetypesScreenState extends ConsumerState<ArchetypesScreen> {
         children: [
           // The hint and the format chips are fixed rather than scrolling, so
           // they are pushed clear of the bar; only the list below them moves.
-          const SizedBox(height: TopBar.inset),
+          SizedBox(height: TopBar.inset),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: Text(
