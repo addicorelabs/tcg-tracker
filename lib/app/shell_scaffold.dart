@@ -105,7 +105,10 @@ class _FloatingNavigationBar extends StatelessWidget {
     // wins.
     return SafeArea(
       top: false,
-      minimum: const EdgeInsets.fromLTRB(10, 0, 10, 28),
+      // The side margins are as wide as the labels allow: every pixel taken off
+      // here comes off a fifth of the pill, and "Impostazioni" has to fit in one
+      // of those fifths.
+      minimum: const EdgeInsets.fromLTRB(24, 0, 24, 28),
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: radius,
