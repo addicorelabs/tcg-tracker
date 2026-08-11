@@ -45,6 +45,38 @@ abstract final class EventOptions {
   static const _yugiohTopCuts = [4, 8, 16, 32, 64];
   static const _magicTopCuts = [4, 8, 16];
 
+  /// How many rounds a tournament of this shape can possibly have.
+  ///
+  /// The swiss rounds it was set up for, plus the rounds it takes to play a cut
+  /// of [topCutSize] down to one player — three for a top 8, four for a top 16,
+  /// and so on. A tournament with no cut stops at its swiss rounds.
+  ///
+  /// The round editor counts up to this and no further. A round 14 of a ten
+  /// round event with a top 8 is a typo every time, and one that quietly
+  /// distorts every figure the analytics draw from it.
+  ///
+  /// A cut size that is not a power of two — which only a hand-edited or
+  /// restored row could hold — is rounded up, so the answer is never short of
+  /// the rounds actually needed.
+  static int maxRounds({
+    required int roundsPlanned,
+    required bool hasTopCut,
+    int? topCutSize,
+  }) {
+    if (!hasTopCut || topCutSize == null || topCutSize < 2) {
+      return roundsPlanned;
+    }
+
+    var players = 1;
+    var rounds = 0;
+    while (players < topCutSize) {
+      players *= 2;
+      rounds++;
+    }
+
+    return roundsPlanned + rounds;
+  }
+
   /// Whether a round of this game can be recorded as a draw.
   ///
   /// Yu-Gi-Oh! rounds are played to a winner here, so the editor refuses a

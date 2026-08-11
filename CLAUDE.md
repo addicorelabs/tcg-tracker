@@ -153,6 +153,13 @@ curl -L -o web/sqlite3.wasm    https://github.com/simolus3/sqlite3.dart/releases
   vale 3 punti come una vittoria: è l'unico posto in cui un bye conta qualcosa, perché
   è così che lo assegna l'organizzatore e il punteggio deve corrispondere alla classifica
   che l'utente ha davanti
+- Il **numero di round di un torneo ha un tetto**: i round svizzeri previsti più
+  quelli che il taglio impiega a risolversi (3 per un top 8, 4 per un top 16, e
+  così via), da `EventOptions.maxRounds`. Un round oltre la fine del torneo è
+  sempre un errore di battitura, e distorce in silenzio tutto ciò che ci si
+  calcola sopra. Un round già salvato oltre il tetto alza il tetto a sé stesso:
+  se il torneo è stato ridotto dopo, si esce cambiando il numero, non non
+  potendolo vedere
 - I match di **top cut** contano nelle statistiche come i round svizzeri. Non si chiede
   all'utente se un round è di top cut: si deduce da `hasTopCut` e dal numero di round
   oltre i round svizzeri previsti

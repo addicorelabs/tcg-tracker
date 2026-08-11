@@ -114,7 +114,12 @@ class _RoundFormState extends ConsumerState<_RoundForm> {
         .read(matchRepositoryProvider)
         .nextRoundNumber(widget.tournament.id);
 
-    if (mounted) setState(() => _roundNumber ??= next);
+    // Clamped: once every round of the tournament is recorded, the next one is
+    // past the end of it, and the editor would open on a number its own stepper
+    // will not go to.
+    if (mounted) {
+      setState(() => _roundNumber ??= next.clamp(1, _maxRound));
+    }
   }
 
   Future<void> _loadArchetypeName(Match match) async {
@@ -141,6 +146,26 @@ class _RoundFormState extends ConsumerState<_RoundForm> {
 
   MatchResult get _result =>
       MatchStats.resultOf(isBye: _isBye, gamesWon: _won, gamesLost: _lost);
+
+  /// The highest round this tournament can have: its swiss rounds plus the
+  /// rounds its cut takes to resolve.
+  ///
+  /// A round already stored above the cap keeps its number and raises the cap
+  /// to itself. The alternative is an editor that opens on a round it refuses
+  /// to show — the tournament may have been edited down to fewer rounds after
+  /// this one was recorded, and the way out of that is to change the number, not
+  /// to be unable to see it.
+  int get _maxRound {
+    final tournament = widget.tournament;
+    final cap = EventOptions.maxRounds(
+      roundsPlanned: tournament.roundsPlanned,
+      hasTopCut: tournament.hasTopCut,
+      topCutSize: tournament.topCutSize,
+    );
+
+    final stored = widget.match?.roundNumber ?? 0;
+    return stored > cap ? stored : cap;
+  }
 
   /// Worked out rather than asked for: a round past the planned swiss rounds of
   /// a tournament that has a top cut is a top cut match, and there is nothing
@@ -264,7 +289,7 @@ class _RoundFormState extends ConsumerState<_RoundForm> {
                     NumberStepper(
                       value: _roundNumber ?? 1,
                       min: 1,
-                      max: 30,
+                      max: _maxRound,
                       onChanged: (value) =>
                           setState(() => _roundNumber = value),
                     ),

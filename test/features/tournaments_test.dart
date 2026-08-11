@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tcg_tracker/core/tournaments/event_options.dart';
 import 'package:tcg_tracker/data/db/seed.dart';
 import 'package:tcg_tracker/data/repositories/deck_repository.dart';
+import 'package:tcg_tracker/shared/widgets/number_stepper.dart';
 
 import '../helpers/app_harness.dart';
 
@@ -365,6 +367,47 @@ void main() {
       await harness.database.select(harness.database.matches).get(),
       isEmpty,
       reason: 'the round was refused, so nothing was written',
+    );
+
+    await unmount(tester);
+  });
+
+  testWidgets('the round counter stops at the tournament\'s last round', (
+    tester,
+  ) async {
+    await createDeck();
+    await openTournamentsTab(tester);
+    await createTournament(tester);
+
+    final tournament =
+        (await harness.database.select(harness.database.tournaments).get())
+            .single;
+
+    final cap = EventOptions.maxRounds(
+      roundsPlanned: tournament.roundsPlanned,
+      hasTopCut: tournament.hasTopCut,
+      topCutSize: tournament.topCutSize,
+    );
+
+    await tester.tap(find.text('New round'));
+    await tester.pumpAndSettle();
+
+    // The first stepper on the screen is the round number; the others count
+    // games, and are further down.
+    final rounds = find.byType(NumberStepper).first;
+    final plus = find.descendant(of: rounds, matching: find.byIcon(Icons.add));
+
+    for (var i = 0; i < cap + 5; i++) {
+      await tester.tap(plus);
+      await tester.pump();
+    }
+
+    expect(
+      find.descendant(of: rounds, matching: find.text('$cap')),
+      findsOneWidget,
+      reason:
+          'a round past the end of the tournament is a typo every time, and '
+          'one that quietly distorts everything computed from it',
     );
 
     await unmount(tester);

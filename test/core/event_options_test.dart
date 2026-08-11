@@ -76,4 +76,71 @@ void main() {
       ]);
     });
   });
+
+  group('how many rounds a tournament can have', () {
+    test('a top 8 adds three rounds to the swiss', () {
+      expect(
+        EventOptions.maxRounds(
+          roundsPlanned: 10,
+          hasTopCut: true,
+          topCutSize: 8,
+        ),
+        13,
+      );
+    });
+
+    test('each doubling of the cut adds one more round', () {
+      int rounds(int cut) => EventOptions.maxRounds(
+        roundsPlanned: 0,
+        hasTopCut: true,
+        topCutSize: cut,
+      );
+
+      expect(
+        [rounds(4), rounds(8), rounds(16), rounds(32), rounds(64)],
+        [2, 3, 4, 5, 6],
+      );
+    });
+
+    test('without a cut the swiss rounds are all there is', () {
+      expect(
+        EventOptions.maxRounds(roundsPlanned: 9, hasTopCut: false),
+        9,
+        reason: 'the size is ignored when the flag says there was no cut',
+      );
+      expect(
+        EventOptions.maxRounds(
+          roundsPlanned: 9,
+          hasTopCut: false,
+          topCutSize: 8,
+        ),
+        9,
+      );
+    });
+
+    test('a cut size that is not a power of two rounds up', () {
+      expect(
+        EventOptions.maxRounds(
+          roundsPlanned: 5,
+          hasTopCut: true,
+          topCutSize: 12,
+        ),
+        9,
+        reason:
+            'twelve players need four rounds to resolve, the same as sixteen: '
+            'answering short would put a real round out of reach',
+      );
+    });
+
+    test('a cut with nothing to play out adds nothing', () {
+      expect(
+        EventOptions.maxRounds(
+          roundsPlanned: 6,
+          hasTopCut: true,
+          topCutSize: 1,
+        ),
+        6,
+      );
+    });
+  });
 }
