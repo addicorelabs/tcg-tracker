@@ -23,13 +23,9 @@ class ShellScaffold extends StatelessWidget {
     final useRail = MediaQuery.sizeOf(context).width >= _railBreakpoint;
 
     // The strip of page above the app, which the app itself cannot draw on.
-    // Here because this is the one build that runs both when the section
-    // changes and when the theme does; it writes nothing unless the colour is
-    // new.
-    applyPageTint(
-      theme: Theme.of(context),
-      onDashboard: navigationShell.currentIndex == 0,
-    );
+    // Here because this build runs under the theme and before the first frame;
+    // it writes nothing unless the colour is new.
+    applyPageTint(Theme.of(context));
 
     if (useRail) {
       return Scaffold(

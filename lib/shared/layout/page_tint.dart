@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme.dart';
 import 'page_tint_platform.dart';
 
-/// Keeps the page behind the app the colour of the section on top of it.
+/// Keeps the page behind the app the colour of the app's own background.
 ///
 /// The status bar of an installed web app is painted by the page, not by the
-/// app, and the app cannot reach up there — covering that strip breaks where
-/// taps land. So it is coloured to match instead.
+/// app, and the app cannot reach up there — covering that strip is what broke
+/// where taps landed. So it is coloured to match instead, and it matches on
+/// every screen but the dashboard, whose banner is a colour of its own.
 ///
-/// Called from `ShellScaffold.build`, which is the one widget that is rebuilt
-/// both when the section changes and when the theme does. A listener on the
-/// router would catch only the first, and a screen setting the colour on the
-/// way in and clearing it on the way out would fight the next one, whose
-/// `initState` runs before the previous one's `dispose`.
-void applyPageTint({required ThemeData theme, required bool onDashboard}) {
-  final css = pageTintCss(theme: theme, onDashboard: onDashboard);
+/// It does not follow the section, and could not: iOS reads the colour when the
+/// app is launched and never looks again. Changing it while the app runs writes
+/// to a page nobody is reading. The theme does survive that, because it is
+/// restored from storage before the first frame.
+void applyPageTint(ThemeData theme) {
+  final css = pageTintCss(theme);
   if (css == _applied) return;
   _applied = css;
   setPageTint(css);
@@ -23,17 +22,9 @@ void applyPageTint({required ThemeData theme, required bool onDashboard}) {
 
 String? _applied;
 
-/// The colour the page takes under a section, as CSS.
-///
-/// Both colours come from the theme in force, so the light one is the light
-/// app's: the banner's violet over the dashboard, and the surface the app is
-/// built on — near white in the light theme, the deep grey in the dark one —
-/// under every other section, which is what their title bar sits on.
-String pageTintCss({required ThemeData theme, required bool onDashboard}) {
-  final color = onDashboard
-      ? theme.appColors.heroGradient.first
-      : theme.scaffoldBackgroundColor;
-
-  final rgb = color.toARGB32() & 0xFFFFFF;
+/// The colour the page takes, as CSS: the surface the app is built on — the
+/// deep grey in the dark theme, near white in the light one.
+String pageTintCss(ThemeData theme) {
+  final rgb = theme.scaffoldBackgroundColor.toARGB32() & 0xFFFFFF;
   return '#${rgb.toRadixString(16).padLeft(6, '0')}';
 }

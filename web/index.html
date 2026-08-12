@@ -60,9 +60,12 @@
        this, so the colour only ever shows where the app itself does not reach —
        the status bar, the home indicator, and the overscroll rubber band.
 
-       This is only the colour the app starts on. From the first frame the app
-       sets it per screen, through setPageTint below, so the strip matches
-       whatever is drawn beneath it instead of reading as a band of its own. -->
+       This is only the colour the app boots on. From the first frame the app
+       replaces it, through setPageTint below, with the background of the theme
+       it opens in — which is the light one whenever that is what was saved.
+
+       It cannot be changed after that, however often it is written: iOS reads
+       this when the app is launched and never looks again. -->
   <style>
     html, body {
       margin: 0;
@@ -76,6 +79,7 @@
        leaving it on one value there would put back the band this removes. -->
   <script>
     window.setPageTint = function (css) {
+      document.documentElement.style.backgroundColor = css;
       document.body.style.backgroundColor = css;
       var meta = document.querySelector('meta[name=theme-color]');
       if (meta) meta.content = css;
