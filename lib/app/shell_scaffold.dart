@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
 import '../shared/layout/bar_insets.dart';
+import '../shared/layout/page_tint.dart';
 
 /// Navigation frame shared by the five top-level sections.
 ///
@@ -20,6 +21,15 @@ class ShellScaffold extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final destinations = _destinations(l10n);
     final useRail = MediaQuery.sizeOf(context).width >= _railBreakpoint;
+
+    // The strip of page above the app, which the app itself cannot draw on.
+    // Here because this is the one build that runs both when the section
+    // changes and when the theme does; it writes nothing unless the colour is
+    // new.
+    applyPageTint(
+      theme: Theme.of(context),
+      onDashboard: navigationShell.currentIndex == 0,
+    );
 
     if (useRail) {
       return Scaffold(

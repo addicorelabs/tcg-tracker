@@ -168,13 +168,14 @@ curl -L -o web/sqlite3.wasm    https://github.com/simolus3/sqlite3.dart/releases
 - La barra del titolo **sfoca ciò che le passa sotto**. Non è decorazione: un
   titolo steso su carte e numeri in movimento diventa illeggibile
 - **La striscia della status bar è dipinta dalla pagina, non dall'app**, e prende
-  il colore della schermata in cima: `PageTint` (`shared/layout/page_tint.dart`,
-  montato nel `builder` di `MaterialApp`) segue il router e chiama
-  `setPageTint`, che scrive il `background` di `<body>` e il `theme-color` —
-  viola dell'hero sulla Home, `scaffoldBackgroundColor` altrove, entrambi dal
-  tema in vigore quindi validi anche in chiaro. È guidato dal router e non dalle
-  singole schermate perché l'`initState` della prossima gira prima del `dispose`
-  della precedente, e le due si darebbero battaglia.
+  il colore della sezione in cima: `applyPageTint`
+  (`shared/layout/page_tint.dart`) scrive il `background` di `<body>` e il
+  `theme-color` — viola dell'hero sulla Home, `scaffoldBackgroundColor` altrove,
+  entrambi dal tema in vigore quindi validi anche in chiaro. Chiamato da
+  `ShellScaffold.build`, che è l'unico build a rigirare **sia** al cambio di
+  sezione **sia** al cambio di tema: un listener sul router prenderebbe solo il
+  primo, e una schermata che lo imposta entrando e lo pulisce uscendo litigherebbe
+  con la successiva, il cui `initState` gira prima del `dispose` della precedente.
 
   `apple-mobile-web-app-status-bar-style` deve restare **`default`**: è l'unico
   dei tre valori che lascia scegliere il colore alla pagina. `black` vuol dire
