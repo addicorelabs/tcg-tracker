@@ -57,11 +57,7 @@ class _PageTintState extends State<PageTint> {
     if (!mounted || theme == null) return;
 
     final location = widget.router.routerDelegate.currentConfiguration.uri.path;
-    final color = location == AppRoute.home.path
-        ? theme.appColors.heroGradient.first
-        : theme.scaffoldBackgroundColor;
-
-    final css = _css(color);
+    final css = pageTintCss(theme: theme, location: location);
     if (css == _applied) return;
     _applied = css;
     setPageTint(css);
@@ -71,7 +67,17 @@ class _PageTintState extends State<PageTint> {
   Widget build(BuildContext context) => widget.child;
 }
 
-String _css(Color color) {
+/// The colour the page takes under [location], as CSS.
+///
+/// Both colours come from the theme in force, so the light one is the light
+/// app's: the banner's violet over the dashboard, and the surface the app is
+/// built on — near white in the light theme, the deep grey in the dark one —
+/// under every other screen, which is what their title bar sits on.
+String pageTintCss({required ThemeData theme, required String location}) {
+  final color = location == AppRoute.home.path
+      ? theme.appColors.heroGradient.first
+      : theme.scaffoldBackgroundColor;
+
   final rgb = color.toARGB32() & 0xFFFFFF;
   return '#${rgb.toRadixString(16).padLeft(6, '0')}';
 }
